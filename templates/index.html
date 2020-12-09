@@ -12,14 +12,20 @@
   </head>
   <body>
     <div class="container">
-        <h1>Stock news</h1>
+        {% include 'navigation.html' %}
+        <hr/>
+        <hr/>
         <div class="row">
             <div class="col-12">
                 {% for news in news_list %}
-                <p><a href="{{ news.url }}">{{ news.title }}</a></p>
-                <p>{{ news.summary }}</p>
-                <p>{{ news.date }}, {{ news.author }}</p>
-                <p>Ticker: {{ news.ticker }}. Change: {{ news.change }}</p>
+                <h4><a href="{{ news.url }}">{{ news.title }}</a></h4>
+                {% if news.summary != news.title %}
+                    <p>{{ news.summary }}</p>
+                {% endif %}
+                {% if news.ticker and news.change %}
+                     <p>Ticker: {{ news.ticker }}. Change: {{ news.change }}</p>
+                {% endif %}
+                <h6>{{ news.date }}, {{ news.author }}</h6>
                 <hr/>
                 {% endfor %}
             </div>
