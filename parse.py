@@ -42,11 +42,13 @@ def get_news():
 
                 try:
                     ticker = one_news.find('span', class_='ticker__symbol').text
+                    ticker = ticker if ticker.isalpha() else ''
                 except AttributeError:
                     ticker = ''
 
                 try:
-                    change = one_news.find('bg-quote', class_='ticker__change').text
+                    change = one_news.find('bg-quote', class_='ticker__change').text[:-1]
+                    change = float(change)
                 except AttributeError:
                     change = ''
 
@@ -63,9 +65,14 @@ def get_news():
     return list_news
 
 
-if __name__ == "__main__":
+def get_news_by_tickers():
+    """getting only news filtered by tickers"""
+
+    tickers = get_tickers().keys()
     news = get_news()
-    for _ in news:
-        for key in _.keys():
-            print(f"{key}: {_[key]}")
-        print()
+    news_with_tickers = [elm for elm in news if elm["ticker"] and elm["ticker"] in tickers]
+    return news_with_tickers
+
+
+if __name__ == "__main__":
+    get_news_by_tickers()

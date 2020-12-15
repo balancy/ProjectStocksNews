@@ -1,19 +1,21 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <!-- Required meta tags -->
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styles.css') }}">
 
+      <!-- Fonts-->
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
     <title>Stock news</title>
   </head>
   <body>
     <div class="container">
         {% include 'navigation.html' %}
-        <hr/>
         <hr/>
         <div class="row">
             <div class="col-12">
@@ -23,9 +25,10 @@
                     <p>{{ news.summary }}</p>
                 {% endif %}
                 {% if news.ticker and news.change %}
-                     <p>Ticker: {{ news.ticker }}. Change: {{ news.change }}</p>
+<!--                <p>Ticker: <a href="https://finance.yahoo.com/quote/{{ news.ticker }}">{{ news.ticker }}</a>. Change:{% if news.change > 0 %} <span class="green">{% else %} <span class="red">{% endif %}{{ news.change }}$</span> </p>-->
+                    <p>Ticker: <a href="https://finance.yahoo.com/quote/{{ news.ticker }}">{{ news.ticker }}</a>. Change:<span class = "{% if news.change > 0 %}green{% else %}red{% endif %}"> {{ news.change }}$</span> </p>
                 {% endif %}
-                <h6>{{ news.date }}, {{ news.author }}</h6>
+                <h6>{{ news.date }} {{ news.author }}</h6>
                 <hr/>
                 {% endfor %}
             </div>
