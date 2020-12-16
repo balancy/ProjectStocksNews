@@ -1,22 +1,113 @@
 body{
     background-color: #f7f7f7;
-    font-family: "Montserrat", sans-serif;
+    font-family: "Roboto";
+}
+
+div.container {
+    padding: 0;
 }
 
 nav {
-    background-color: #cceabb;
+    background-color: skyblue;
+    margin-bottom: 5px;
+    height: 80px;
 }
 
-/* Headings */
+
+/* Headings, text */
+h4{
+    font-size: 1.25rem;
+}
+
 a {
-    color: #3f3f44;
+    color: steelblue;
+}
+
+a:hover {
+    color: chocolate;
+}
+
+h6.navbar-brand{
+    font-family: "Oswald";
+    color: white;
+    font-size: 2rem;
+    margin-left: 10px;
 }
 
 /* Ticker change color */
-.green {
+p.p-tickers {
+    font-weight: bold;
+}
+
+a.a-tickers {
+    color: navy;
+}
+
+a.a-tickers:hover {
+    color: chocolate;
+}
+
+span.green {
     color: green;
 }
 
-.red {
+span.red {
     color: red;
+}
+
+img.icon{
+    width: 10px;
+    vertical-align: center;
+}
+
+/* Table */
+
+table {
+    border-collapse: separate;
+    text-align: justify;
+    border-style: hidden;
+}
+
+table td {
+    border: 1px solid lightgrey;
+    padding: 10px;
+}
+
+td.td-left-column {
+    vertical-align: top;
+    width: 100px;
+}
+
+p.p-left-column, p.p-tickers-descr {
+    font-family: "Oswald";
+    font-size: small;
+    color: silver;
+    margin: 6px auto;
+}
+
+p.author {
+    color: chocolate;
+}
+
+p.p-tickers {
+    font-family: "Oswald";
+}
+
+p.p-tickers, p.p-tickers-descr {
+    margin-bottom: 0;
+}
+
+/* Tickers.html */
+
+div.row-tickers{
+    border-collapse: separate;
+    text-align: justify;
+    border-style: hidden;
+    margin: 0;
+}
+
+div.col-tickers{
+    border: 1px lightgrey solid;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }

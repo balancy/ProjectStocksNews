@@ -54,6 +54,12 @@ def get_news():
 
                 try:
                     author = one_news.find('span', class_='article__author').text
+                    if author == "by MarketWatch Automation":
+                        author = "BREAKING"
+                    elif author == "by Barron's":
+                        author = "BARRON'S"
+                    else:
+                        author = ""
                 except AttributeError:
                     author = ''
 

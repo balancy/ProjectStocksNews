@@ -1,44 +1,86 @@
 <!doctype html>
 <html lang="en">
-  <head>
-      <!-- Required meta tags -->
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-      <!-- Bootstrap CSS -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-      <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styles.css') }}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/styles.css') }}">
 
-      <!-- Fonts-->
-      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <title>Stock news</title>
-  </head>
-  <body>
-    <div class="container">
-        {% include 'navigation.html' %}
-        <hr/>
-        <div class="row">
-            <div class="col-12">
+    <!-- Fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;400&display=swap" rel="stylesheet">
+    <title>{{ pagetitle }}</title>
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-md navbar-primary">
+        <h6 class="navbar-brand">Tickers</h6>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">
+                    <button type="button" class="btn btn-outline-light">All News</button>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/news_spb">
+                    <button type="button" class="btn btn-outline-light">SPB News</button>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/tickers">
+                    <button type="button" class="btn btn-outline-light">Tickers</button>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="row">
+        <div class="col-12">
+            <table>
                 {% for news in news_list %}
-                <h4><a href="{{ news.url }}">{{ news.title }}</a></h4>
-                {% if news.summary != news.title %}
-                    <p>{{ news.summary }}</p>
-                {% endif %}
-                {% if news.ticker and news.change %}
-<!--                <p>Ticker: <a href="https://finance.yahoo.com/quote/{{ news.ticker }}">{{ news.ticker }}</a>. Change:{% if news.change > 0 %} <span class="green">{% else %} <span class="red">{% endif %}{{ news.change }}$</span> </p>-->
-                    <p>Ticker: <a href="https://finance.yahoo.com/quote/{{ news.ticker }}">{{ news.ticker }}</a>. Change:<span class = "{% if news.change > 0 %}green{% else %}red{% endif %}"> {{ news.change }}$</span> </p>
-                {% endif %}
-                <h6>{{ news.date }} {{ news.author }}</h6>
-                <hr/>
+                <tr>
+                    <td class="td-left-column">
+                        <p class="p-left-column">{{ news.date }}</p>
+                        <p class="p-left-column author">{{ news.author }}</p>
+                    </td>
+                    <td>
+                        <h4><a class="title" href="{{ news.url }}">{{ news.title }}</a></h4>
+                        {% if news.summary != news.title %}
+                        <p class="summary">{{ news.summary }}</p>
+                        {% endif %}
+                        {% if news.ticker and news.change %}
+                        <p class="p-tickers"><a class="a-tickers"
+                                                href="https://finance.yahoo.com/quote/{{ news.ticker }}">{{
+                            news.ticker.upper() }}</a>:
+                            {% if news.change > 0 %}
+                            <span class="green"> {{ news.change }}%</span><img class="icon"
+                                                                               src="{{ url_for('static', filename='images/flash_green.ico') }}">
+                            {% else %}
+                            <span class="red"> {{ news.change }}%</span><img class="icon"
+                                                                             src="{{ url_for('static', filename='images/flash_red.ico') }}">
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
                 {% endfor %}
-            </div>
+            </table>
         </div>
     </div>
+</div>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  </body>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
 </html>
