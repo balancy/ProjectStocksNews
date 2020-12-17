@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 
 def get_tickers():
     """get the list of all tickers"""
-    filename = "resources/tickers.json"
+    filename = "flaskr/static/data/tickers.json"
     with open(filename) as json_file:
         data = json.load(json_file)
     return data

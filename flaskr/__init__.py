@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from parse import get_news, get_news_by_tickers, get_tickers
+from flaskr.model import get_news, get_news_by_tickers, get_tickers
 
 app = Flask(__name__)
 
@@ -21,7 +21,7 @@ def stocks_list_spb():
 @app.route("/tickers")
 def tickers():
     tickers = get_tickers()
-    return render_template('tickers.html', tickers = tickers)
+    return render_template('tickers.html', tickers=tickers)
 
 
 if __name__ == "__main__":

@@ -2,5 +2,5 @@
 .idea/
 __pycache__/
 env/
-extract_tickers.py
-resources/ListingSecurityList.csv
+flaskr/utils/
+flaskr/static/data/ListingSecurityList.csv
