@@ -82,12 +82,12 @@ class Asset:
         return result["Close"]
 
     def __repr__(self):
-        return "Объект 'yfinance'"
+        return "Объект 'yfinance' с заданным тикером"
 
 
+if __name__ == "__main__":
+    test = Asset("TSLA")
 
-test = Asset("TSLA")
+    print(test.get_hist_last_1_day())
 
-print(test.get_hist_last_1_day())
-
-print(test)
+    print(test)
