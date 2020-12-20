@@ -6,7 +6,6 @@ app = Flask(__name__)
 
 @app.route("/")
 @app.route("/index")
-@app.route("/all_news")
 def stocks_list():
     news = get_news()
     return render_template('index.html', news_list=news, pagetitle="All news")

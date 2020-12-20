@@ -34,7 +34,8 @@ h6.navbar-brand{
     margin-left: 10px;
 }
 
-/* Ticker change color */
+/* Ticker changing color */
+
 p.p-tickers {
     font-weight: bold;
 }
@@ -62,22 +63,6 @@ img.icon{
 
 /* Table */
 
-table {
-    border-collapse: separate;
-    text-align: justify;
-    border-style: hidden;
-}
-
-table td {
-    border: 1px solid lightgrey;
-    padding: 10px;
-}
-
-td.td-left-column {
-    vertical-align: top;
-    width: 100px;
-}
-
 p.p-left-column, p.p-tickers-descr {
     font-family: "Oswald";
     font-size: small;
@@ -97,16 +82,16 @@ p.p-tickers, p.p-tickers-descr {
     margin-bottom: 0;
 }
 
-/* Tickers.html */
+/* Div rows and cols */
 
-div.row-tickers{
+div.row{
     border-collapse: separate;
     text-align: justify;
     border-style: hidden;
     margin: 0;
 }
 
-div.col-tickers{
+div.column{
     border: 1px lightgrey solid;
     padding-top: 5px;
     padding-bottom: 5px;

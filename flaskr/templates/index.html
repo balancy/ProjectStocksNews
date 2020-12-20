@@ -37,39 +37,34 @@
             </li>
         </ul>
     </nav>
+    {% for news in news_list %}
     <div class="row">
-        <div class="col-12">
-            <table>
-                {% for news in news_list %}
-                <tr>
-                    <td class="td-left-column">
-                        <p class="p-left-column">{{ news.date }}</p>
-                        <p class="p-left-column author">{{ news.author }}</p>
-                    </td>
-                    <td>
-                        <h4><a class="title" href="{{ news.url }}">{{ news.title }}</a></h4>
-                        {% if news.summary != news.title %}
-                        <p class="summary">{{ news.summary }}</p>
-                        {% endif %}
-                        {% if news.ticker and news.change %}
-                        <p class="p-tickers"><a class="a-tickers"
-                                                href="https://finance.yahoo.com/quote/{{ news.ticker }}">{{
-                            news.ticker.upper() }}</a>:
-                            {% if news.change > 0 %}
-                            <span class="green"> {{ news.change }}%</span><img class="icon"
-                                                                               src="{{ url_for('static', filename='images/flash_green.ico') }}">
-                            {% else %}
-                            <span class="red"> {{ news.change }}%</span><img class="icon"
-                                                                             src="{{ url_for('static', filename='images/flash_red.ico') }}">
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
+        <div class="column col-2">
+            <p class="p-left-column">{{ news.date }}</p>
+            <p class="p-left-column author">{{ news.author }}</p>
+        </div>
+        <div class="column col-10">
+            <h4><a class="title" href="{{ news.url }}">{{ news.title }}</a></h4>
+            {% if news.summary != news.title %}
+            <p class="summary">{{ news.summary }}</p>
+            {% endif %}
+            {% if news.ticker and news.change %}
+            <p class="p-tickers"><a class="a-tickers"
+                                    href="https://finance.yahoo.com/quote/{{ news.ticker }}">{{
+                news.ticker.upper() }}</a>:
+                {% if news.change > 0 %}
+                <span class="green"> {{ news.change }}%</span><img class="icon"
+                                                                   src="{{ url_for('static', filename='images/flash_green.ico') }}">
+                {% else %}
+                <span class="red"> {{ news.change }}%</span><img class="icon"
+                                                                 src="{{ url_for('static', filename='images/flash_red.ico') }}">
+                {% endif %}
+            {% endif %}
         </div>
     </div>
+    {% endfor %}
 </div>
+
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
