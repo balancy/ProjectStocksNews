@@ -4,3 +4,4 @@ __pycache__/
 env/
 flaskr/utils/
 flaskr/static/data/ListingSecurityList.csv
+flaskr.db

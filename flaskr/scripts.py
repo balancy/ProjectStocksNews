@@ -74,16 +74,3 @@ def get_news():
             pass
     return list_news
 
-
-def get_news_by_tickers():
-    """Получение новостей из rss ленты по определенным тикерам бумаг.
-    """
-
-    tickers = get_tickers().keys()
-    news = get_news()
-    news_with_tickers = [elm for elm in news if elm["ticker"] and elm["ticker"] in tickers]
-    return news_with_tickers
-
-
-if __name__ == "__main__":
-    get_news_by_tickers()

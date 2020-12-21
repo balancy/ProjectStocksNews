@@ -19,28 +19,34 @@
 <div class="container">
     <nav class="navbar navbar-expand-md navbar-primary">
         <h6 class="navbar-brand">Tickers</h6>
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/">
-                    <button type="button" class="btn btn-outline-light">All News</button>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/news_spb">
-                    <button type="button" class="btn btn-outline-light">SPB News</button>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/tickers">
-                    <button type="button" class="btn btn-outline-light">Tickers</button>
-                </a>
-            </li>
-        </ul>
+        <button class="navbar-toggler btn btn-outline-light" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01"
+                    aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">
+                        <button type="button" class="btn btn-outline-light">All News</button>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news_spb">
+                        <button type="button" class="btn btn-outline-light">SPB News</button>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tickers">
+                        <button type="button" class="btn btn-outline-light">Tickers</button>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </nav>
     {% for news in news_list %}
     <div class="row">
         <div class="column col-2">
-            <p class="p-left-column">{{ news.date }}</p>
+            <p class="p-left-column">{{ news.date.strftime('%d.%m.%Y. %H-%m') }}</p>
             <p class="p-left-column author">{{ news.author }}</p>
         </div>
         <div class="column col-10">
