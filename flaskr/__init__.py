@@ -1,7 +1,20 @@
 from flask import Flask, render_template
 from flaskr.model import get_news, get_news_by_tickers, get_tickers
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 app = Flask(__name__)
+
+
+def scheduled_task():
+    print("Every 3 seconds")
+
+
+@app.before_first_request
+def init_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(scheduled_task, 'interval', seconds=3, id='main_scheduled_job')
+    scheduler.start()
 
 
 @app.route("/")
@@ -19,9 +32,8 @@ def stocks_list_spb():
 
 @app.route("/tickers")
 def tickers():
-    tickers = get_tickers()
-    return render_template('tickers.html', tickers=tickers)
+    _tickers = get_tickers()
+    return render_template('tickers.html', tickers=_tickers)
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+init_scheduler()
