@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 
+from flaskr.bot import bot
 from flaskr.db_entities import db
 from flaskr.db_handling import get_news_from_db
 from flaskr.scripts import get_tickers
@@ -28,5 +29,10 @@ def create_app():
     def tickers():
         _tickers = get_tickers()
         return render_template('tickers.html', tickers=_tickers)
+
+    @app.route("/bot")
+    def bot_send():
+        bot.send_news("Hi there.")
+        return "Bot sent message to user"
 
     return app

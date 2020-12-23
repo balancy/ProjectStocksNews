@@ -1,23 +1,29 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime
 
-from flaskr.db_handling import save_news_to_db
+from flaskr.db_handling import save_news_to_db, delete_news_from_db
 
 
 def get_scheduler(app):
-    """Initializing task manager.
+    """Инициализация менеджера задач
     """
 
-    def scheduled_task():
-        """Reading from the rss and saving news to db
+    def saving_news_to_db():
+        """Чтение новостей из rss ленты и сохранение их в базу данных
         """
 
-        print(f"Reading rss: {datetime.now()}")
         with app.app_context():
             save_news_to_db()
 
+    def deleting_old_news():
+        """Удаление старых новостей из базы данных
+        """
+
+        with app.app_context():
+            delete_news_from_db()
+
     scheduler = BackgroundScheduler()
-    scheduler.add_job(scheduled_task, 'interval', seconds=600, id='main_scheduled_job')
+    scheduler.add_job(saving_news_to_db, 'interval', minutes=10, id='saving_job')
+    scheduler.add_job(deleting_old_news, 'interval', days=1, id='deleting_job')
     scheduler.start()
 
     return scheduler

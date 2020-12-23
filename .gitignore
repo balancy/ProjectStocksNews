@@ -5,3 +5,4 @@ env/
 flaskr/utils/
 flaskr/static/data/ListingSecurityList.csv
 flaskr.db
+flaskr/config.py
