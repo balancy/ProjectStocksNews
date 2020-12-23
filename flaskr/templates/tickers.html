@@ -40,7 +40,7 @@
 
     <div class="row row-tickers">
         {% for ticker in tickers %}
-            <div class="col-4 col-tickers">
+            <div class="column col-4">
                 <p class="p-tickers"><a class="a-tickers" href="https://finance.yahoo.com/quote/{{ ticker }}">{{ticker.upper() }}</a></p>
                 <p class="p-tickers-descr">{{ tickers[ticker] }}</p>
             </div>
