@@ -29,7 +29,7 @@ def get_html(url):
         return False
 
 
-def get_one_record_news(one_news):
+def get_one_record_news(one_news, tickers_spb):
     """Запись в словарь одной новости.
     """
 
@@ -51,8 +51,10 @@ def get_one_record_news(one_news):
     author = one_news.find('span', class_='article__author')
     author = authors_dict.get(author.text, '') if author else ''
 
+    is_on_spb = True if ticker in tickers_spb else False
+
     return {'title': title, 'url': url, 'summary': summary, 'date': date, 'ticker': ticker, 'change': change,
-            'author': author}
+            'author': author, 'is_on_spb': is_on_spb}
 
 
 def get_news():
@@ -62,15 +64,15 @@ def get_news():
     list_news = list()
     html = get_html(config.RSS_URL)
     if html:
+        tickers_spb = get_tickers()
         soup = BeautifulSoup(html, 'html.parser')
         try:
             all_news = soup.find('div', class_='collection__elements '
                                                'j-scrollElement').findAll('div', class_='article__content')
             for one_news in all_news:
-                record_one_news = get_one_record_news(one_news)
+                record_one_news = get_one_record_news(one_news, tickers_spb)
                 list_news.append(record_one_news)
 
         except AttributeError:
             pass
     return list_news
-

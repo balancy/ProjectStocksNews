@@ -23,7 +23,7 @@ def get_scheduler(app):
 
     scheduler = BackgroundScheduler()
     scheduler.add_job(saving_news_to_db, 'interval', minutes=10, id='saving_job')
-    scheduler.add_job(deleting_old_news, 'interval', days=1, id='deleting_job')
+    scheduler.add_job(deleting_old_news, 'interval', days=2, id='deleting_job')
     scheduler.start()
 
     return scheduler

@@ -1,9 +1,8 @@
 from flask import Flask, render_template
-
 from flaskr.bot import bot
 from flaskr.db_entities import db
 from flaskr.db_handling import get_news_from_db
-from flaskr.scripts import get_tickers
+from flaskr.parse_news import get_tickers
 from flaskr.tasks import get_scheduler
 
 
@@ -11,7 +10,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_pyfile("config.py")
     db.init_app(app)
-    db.app = app
+    #db.app = app
     get_scheduler(app)
 
     @app.route("/")
@@ -28,11 +27,6 @@ def create_app():
     @app.route("/tickers")
     def tickers():
         _tickers = get_tickers()
-        return render_template('tickers.html', tickers=_tickers)
-
-    @app.route("/bot")
-    def bot_send():
-        bot.send_news("Hi there.")
-        return "Bot sent message to user"
+        return render_template('tickers.html', tickers=_tickers, pagetitile="Tickers")
 
     return app

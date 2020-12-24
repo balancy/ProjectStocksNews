@@ -1,6 +1,17 @@
-from flaskr.scripts import get_news, get_tickers
-from flaskr.db_entities import db, News
 from datetime import datetime, timedelta
+
+from flaskr.bot import bot
+from flaskr.db_entities import db, News
+from flaskr.parse_news import get_news
+
+
+def send_to_bot(news) -> None:
+    """Отправка новости в бот, если она удовлетворяет условиям
+    """
+
+    if news["is_on_spb"]:
+        bot.format_from_json(news)
+        bot.send_news()
 
 
 def save_news_to_db() -> None:
@@ -14,6 +25,8 @@ def save_news_to_db() -> None:
             print(f"News with title '{one_news['title']}' added to DB.")
             one_news_to_db_format = News(one_news)
             db.session.add(one_news_to_db_format)
+
+            send_to_bot(one_news)
     db.session.commit()
 
 
@@ -21,10 +34,10 @@ def get_news_from_db(only_spb=False):
     """Извлечение новостей из базы данных
     """
 
-    all_news = News.query.order_by(News.date.desc()).all()
     if only_spb:
-        tickers = get_tickers()
-        all_news = [elm for elm in all_news if elm.ticker and elm.ticker in tickers]
+        all_news = News.query.filter(News.is_on_spb.is_(True)).order_by(News.date.desc()).all()
+    else:
+        all_news = News.query.order_by(News.date.desc()).all()
     return all_news
 
 
@@ -37,8 +50,3 @@ def delete_news_from_db() -> None:
     old_news.delete()
     db.session.commit()
     print(f"{num_old_news} old news were deleted from the DB.")
-
-
-if __name__ == "__main__":
-    save_news_to_db()
-    delete_news_from_db()
