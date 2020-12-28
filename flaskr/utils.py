@@ -136,7 +136,6 @@ def create_graph(tiker):
     :param tiker: Тикер котировки по которой составляется график
     :return: Возвращает название созданной картинки
     """
-    logging.info("Выполняется create_graph")
     graph = Asset(tiker).get_hist_last_1_day()
 
     if graph[0] > graph[-1]:
