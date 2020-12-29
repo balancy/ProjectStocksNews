@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from flaskr.db_handling import save_news_to_db, delete_news_from_db
+from flaskr.db_news_interact import save_news_to_db, delete_news_from_db
 
 
 def get_scheduler(app):
@@ -22,8 +22,8 @@ def get_scheduler(app):
             delete_news_from_db()
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(saving_news_to_db, 'interval', minutes=10, id='saving_job')
-    scheduler.add_job(deleting_old_news, 'interval', days=2, id='deleting_job')
+    scheduler.add_job(saving_news_to_db, 'interval', minutes=10, id='saving_news_job')
+    scheduler.add_job(deleting_old_news, 'interval', days=2, id='deleting_news_job')
     scheduler.start()
 
     return scheduler

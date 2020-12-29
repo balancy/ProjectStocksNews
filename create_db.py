@@ -1,3 +1,5 @@
-from flaskr import db, create_app
+from db import engine
+from models import Base
 
-db.create_all(app=create_app())
+
+Base.metadata.create_all(bind=engine)

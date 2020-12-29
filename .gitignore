@@ -2,7 +2,8 @@
 .idea/
 __pycache__/
 env/
-flaskr/utils/
 flaskr/static/data/ListingSecurityList.csv
 flaskr.db
-flaskr/config.py
+config.py
+test_bd_operations.py
+test_nyse_opening_hours.py
