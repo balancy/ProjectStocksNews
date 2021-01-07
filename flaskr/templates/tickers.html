@@ -3,7 +3,7 @@
 {% block content %}
     <div class="row row-tickers">
         {% for ticker in tickers %}
-            <div class="column col-4">
+            <div class="column col-3">
                 <p class="p-tickers"><a class="a-tickers" href="https://finance.yahoo.com/quote/{{ ticker }}">{{ticker.upper() }}</a></p>
                 <p class="p-tickers-descr">{{ tickers[ticker] }}</p>
             </div>

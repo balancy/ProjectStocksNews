@@ -1,7 +1,7 @@
 from telegram.ext import Updater, CommandHandler
 from config import BOT_API_KEY
-from db import db_session
-from models import BotUser
+from flaskr.db import db_session
+from flaskr.user.model import BotUser
 
 
 def save_bot_user_to_db(user_id, username) -> None:

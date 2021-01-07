@@ -1,5 +1,7 @@
-from db import engine
-from models import Base
+from flaskr.db import Base, engine
+from flaskr.tickers.model import Fundamentals
+from flaskr.news.model import News
+from flaskr.user.model import BotUser
 
 
 Base.metadata.create_all(bind=engine)

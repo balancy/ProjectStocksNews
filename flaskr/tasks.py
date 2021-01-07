@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from flaskr.db_news_interact import save_news_to_db, delete_news_from_db
+from flaskr.news.db_interact import save_news_to_db, delete_news_from_db
 
 
 def get_scheduler(app):

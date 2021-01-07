@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
-from db import Base
+from flaskr.db import Base
 
 
 class News(Base):
     __tablename__ = "news"
+
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     url = Column(String, nullable=False)
@@ -32,12 +33,3 @@ class News(Base):
 
     def __repr__(self):
         return f'<News {self.title} {self.url}>'
-
-
-class BotUser(Base):
-    __tablename__ = "bot_user"
-    id = Column(Integer, primary_key=True)
-    username = Column(String(50))
-
-    def __repr__(self):
-        return f'<BotUser {self.id} {self.username}>'

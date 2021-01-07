@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
 from flaskr.sending_bot import sending_bot
-from db import db_session
-from models import News
-from flaskr.parse_news import get_news
+from flaskr.db import db_session
+from flaskr.news.model import News
+from flaskr.news.parse import get_news
 
 
 def send_to_bot(news) -> None:
@@ -21,13 +21,19 @@ def save_news_to_db() -> None:
 
     all_news = get_news()
     for one_news in all_news:
-        news_exists = News.query.filter(News.id == one_news['id']).count()
-        if not news_exists:
+        first_news_in_db = News.query.filter(News.id == one_news['id']).first()
+
+        if not first_news_in_db:
             print(f"News with title '{one_news['title']}' added to DB.")
             one_news_to_db_format = News(one_news)
             db_session.add(one_news_to_db_format)
 
             send_to_bot(one_news)
+
+        elif one_news['change'] != first_news_in_db.change:
+            print(f"The price of {first_news_in_db.ticker} updated")
+            first_news_in_db.change = one_news['change']
+
     db_session.commit()
 
 

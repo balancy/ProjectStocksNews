@@ -1,14 +1,15 @@
 body{
-    background-color: #f7f7f7;
+    background-color: lighblue;
     font-family: "Roboto";
 }
 
 div.container {
     padding: 0;
+    width: 1000px;
 }
 
 nav {
-    background-color: skyblue;
+    background-color: steelblue;
     margin-bottom: 5px;
     height: 80px;
 }
@@ -24,7 +25,7 @@ a {
 }
 
 a:hover {
-    color: chocolate;
+    color: darkred;
 }
 
 h6.navbar-brand{
@@ -41,11 +42,11 @@ p.p-tickers {
 }
 
 a.a-tickers {
-    color: navy;
+    color: midnightblue;
 }
 
 a.a-tickers:hover {
-    color: chocolate;
+    color: darkred;
 }
 
 span.green {
@@ -66,12 +67,12 @@ img.icon{
 p.p-left-column, p.p-tickers-descr {
     font-family: "Oswald";
     font-size: small;
-    color: silver;
+    color: midnightblue;
     margin: 6px auto;
 }
 
 p.author {
-    color: chocolate;
+    color: darkred;
 }
 
 p.p-tickers {
@@ -95,4 +96,19 @@ div.column{
     border: 1px lightgrey solid;
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+/* Footer */
+div.footer {
+    background-color: steelblue;
+    height: 50px;
+    text-align: right;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+a.a-footer{
+    font-family: "Oswald";
+    color: white;
+    margin-right: 20px;
 }

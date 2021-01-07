@@ -1,6 +1,6 @@
 from telegram import ParseMode, Bot
 from config import BOT_API_KEY
-from models import BotUser
+from flaskr.user.model import BotUser
 
 
 class SendingBot(Bot):

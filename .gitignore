@@ -5,5 +5,4 @@ env/
 flaskr/static/data/ListingSecurityList.csv
 flaskr.db
 config.py
-test_bd_operations.py
-test_nyse_opening_hours.py
+just_for_test
