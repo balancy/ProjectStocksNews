@@ -29,6 +29,8 @@ def start_reading_bot() -> None:
         id = update["message"]["chat"]["id"]
         username = update["message"]["chat"]["username"]
         save_bot_user_to_db(user_id=id, username=username)
+        update.message.reply_text(f"Привет! Мы внесли тебя в базу для рассылки. Как только новости будут появляться, "
+                                  f"ты будешь их получать через этот бот!")
 
     dp.add_handler(CommandHandler("start", read_user_info))
     mybot.start_polling()

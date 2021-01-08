@@ -10,6 +10,7 @@
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/styles.css') }}">
 
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     <!-- Fonts-->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;400&display=swap" rel="stylesheet">
@@ -18,7 +19,7 @@
 <body>
 <div class="container">
     <nav class="navbar navbar-expand-md navbar-primary">
-        <h6 class="navbar-brand">Tickers</h6>
+        <h6 class="navbar-brand">{{ pagetitle }}</h6>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <a class="nav-link" href="/">
@@ -42,7 +43,6 @@
     <div class="footer">
         <a class="a-footer" href="https://telegram.me/spb_stocks_news_bot">Subscribe on our Telegram bot</a>
     </div>
-    </footer>
 </div>
 
 <!-- Optional JavaScript -->

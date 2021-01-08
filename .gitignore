@@ -6,3 +6,4 @@ flaskr/static/data/ListingSecurityList.csv
 flaskr.db
 config.py
 just_for_test
+flaskr/graphs/*
