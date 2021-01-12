@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row row-tickers">
-    <h4 class="price-chart">Price Chart</h4>
+<div class="row-tickers">
+    <h4 class="h4-tickers">Price Chart</h4>
     <!-- TradingView Widget BEGIN -->
     <div class="tradingview-widget-container">
         <div id="tradingview_efe44"></div>
@@ -17,8 +17,8 @@
                 <script type="text/javascript">
                       new TradingView.widget({
                           "width": 980,
-                          "height": 610,
-                          "symbol": "NASDAQ:{{ ticker }}",
+                          "height": 600,
+                          "symbol": "{{ ticker }}",
                           "interval": "D",
                           "timezone": "Etc/UTC",
                           "theme": "light",
@@ -37,7 +37,41 @@
         <!-- TradingView Widget END -->
     </div>
 </div>
-<div class="row row-tickers">
-    <h4 class="price-chart">Perspective Diagram</h4>
+<div class="row-tickers">
+    <h4 class="h4-tickers">Perspective Diagram</h4>
+    <img class="diagram" src="graphs/{{ ticker }}_chart_perspective.png" alt="{{ ticker }}_chart_perspective">
 </div>
+<div class="row-tickers">
+    {% for check in checks %}
+        <h5 class="h5-checks">{{ check.title() }}: </h5>
+        {% for index in range(6) %}
+            <div>
+            <img class="check" src="static/images/{% if checks[check][index] %}green{% else %}red{% endif %}_check.png"
+                 alt="{{ value }}">
+            <span>{{ checks_descr[check][index] }}</span>
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+<div class="row-tickers">
+    <h4 class="h4-tickers">Analysts recommendations</h4>
+    <h5 class="h5-checks">Overall recommendation: {{ recommendations['Analysts recommendations'] }}</h5>
+    <div class="row">
+    {% for recommendation_key in recommendations %}
+        {% if recommendation_key != 'Analysts recommendations' %}
+            <div class="col col-4">
+            <p class="p-recommendations">{{ recommendation_key }}: </p></div>
+            <div class="col col-4 rectangles">
+            {% for _ in range(recommendations[recommendation_key]) %}
+                <img src="static/images/green_segment.png">
+            {% endfor %}
+            {% for _ in range(5 - recommendations[recommendation_key]) %}
+                <img src="static/images/empty_segment.png">
+            {% endfor %}</div>
+            <div class="col col-4"></div>
+        {% endif %}
+    {% endfor %}
+    </div>
+</div>
+
 {% endblock %}

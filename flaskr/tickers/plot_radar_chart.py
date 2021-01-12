@@ -3,12 +3,13 @@ from math import pi
 import matplotlib
 import matplotlib.pyplot as plt
 import pathlib
-from flaskr.tickers.calculate_diagram_coefficients import get_coefficients
 matplotlib.use('Agg')
 
 RED = 'red'
+ORANGE_RED = '#FF4500'
 ORANGE = 'orange'
 YELLOW = 'yellow'
+GREEN_YELLOW = '#ADFF2F'
 GREEN = 'green'
 
 FILEPATH = "flaskr/graphs/"
@@ -32,28 +33,29 @@ def get_color(score_):
     """Get color according to score
     """
 
-    if score_ < 10:
+    if score_ < 5:
         return RED
-    elif score_ < 16:
+    elif score_ < 10:
+        return ORANGE_RED
+    elif score_ < 15:
         return ORANGE
-    elif score_ < 23:
+    elif score_ < 20:
         return YELLOW
+    elif score_ < 25:
+        return GREEN_YELLOW
     else:
         return GREEN
 
 
-def create_and_save_plot(ticker):
+def create_and_save_plot(ticker, coefficients):
     """Create spider plot according to coefficients calculated on the basis of ticker fundamentals
     """
 
-    # Set data
-    df = get_coefficients(ticker)
-
     # categories
-    categories = df.keys()
+    categories = coefficients.keys()
     N = len(categories)
 
-    values = list(df.values())
+    values = [sum(list_) for list_ in coefficients.values()]
     score = sum(values)
     color = get_color(score)
     values += values[:1]
@@ -82,11 +84,11 @@ def create_and_save_plot(ticker):
     plt.clf()
 
 
-def create_chart_perspective(ticker):
+def check_perspective_chart(ticker, coefficients):
     """If chart doesn't exist, we create and save it
     """
 
     complete_filename = f"{FILEPATH}{ticker}{FILENAME}"
     if not is_graph_exists(complete_filename):
-        create_and_save_plot(ticker)
+        create_and_save_plot(ticker, coefficients)
 

@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from flaskr.db import db_session
-from flaskr.tickers.extract_fundamentals_from_api import extract_fundamentals
+from flaskr.tickers.extract_fundamentals import extract_fundamentals
 from flaskr.tickers.model import Fundamentals
 
 

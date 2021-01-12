@@ -20,11 +20,6 @@ h4{
     font-size: 1.25rem;
 }
 
-.price-chart{
-    color: midnightblue;
-    margin: 12px auto;
-}
-
 a {
     color: steelblue;
 }
@@ -109,11 +104,50 @@ div.footer {
     height: 50px;
     text-align: right;
     padding-top: 10px;
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 a.a-footer{
     font-family: "Oswald";
     color: white;
     margin-right: 20px;
+}
+
+/* Tickers */
+div.row-tickers {
+    text-align: left;
+}
+
+.h4-tickers {
+    color: steelblue;
+    margin: 24px auto 24px 12px;
+    display: block;
+}
+
+.h5-checks {
+    color: steelblue;
+    margin: 12px auto 12px 36px;
+    font-size: 1.1rem;
+}
+
+img.diagram {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+img.check {
+    width: 20px;
+    height: 20px;
+    margin-left: 60px;
+    margin-right: 8px;
+}
+
+div.rectangles{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.p-recommendations{
+    margin: 12px auto 12px 36px;
 }

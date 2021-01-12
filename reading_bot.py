@@ -16,6 +16,24 @@ def save_bot_user_to_db(user_id, username) -> None:
         db_session.commit()
 
 
+def read_user_info(update, _context):
+    """Reading user's info."""
+
+    id = update["message"]["chat"]["id"]
+    username = update["message"]["chat"]["username"]
+    save_bot_user_to_db(user_id=id, username=username)
+    update.message.reply_text(f"Привет! Мы внесли тебя в базу для рассылки. Как только новости будут появляться, "
+                              f"ты будешь их получать через этот бот!")
+
+
+def send_chart(update, context):
+    """Sending chart to the user"""
+
+    chat_id = update.effective_chat.id
+    filename = "flaskr/graphs/AAPL_chart_perspective.png"
+    context.bot.send_photo(chat_id=chat_id, photo=open(filename, 'rb'))
+
+
 def start_reading_bot() -> None:
     """Starting bot which reads all active users ids
     """
@@ -23,16 +41,8 @@ def start_reading_bot() -> None:
     mybot = Updater(BOT_API_KEY, use_context=True)
     dp = mybot.dispatcher
 
-    def read_user_info(update, _context):
-        """Reading user's info."""
-
-        id = update["message"]["chat"]["id"]
-        username = update["message"]["chat"]["username"]
-        save_bot_user_to_db(user_id=id, username=username)
-        update.message.reply_text(f"Привет! Мы внесли тебя в базу для рассылки. Как только новости будут появляться, "
-                                  f"ты будешь их получать через этот бот!")
-
     dp.add_handler(CommandHandler("start", read_user_info))
+    dp.add_handler(CommandHandler("chart", send_chart))
     mybot.start_polling()
     mybot.idle()
 

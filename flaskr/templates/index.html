@@ -16,10 +16,10 @@
             <p class="p-tickers"><a class="a-tickers" href="https://www.marketwatch.com/investing/index/{% if ':' in news.ticker  %}{{ news.ticker[3:] }}?countrycode={{ news.ticker[:2] }}{% else %}{{ news.ticker }}{% endif %}">{{news.ticker.upper() }}</a>:
                 {% if news.change > 0 %}
                 <span class="green"> {{ news.change }}%</span><img class="icon"
-                                                                   src="{{ url_for('static', filename='images/flash_green.ico') }}">
+                                                                   src="static/images/flash_green.ico">
                 {% else %}
                 <span class="red"> {{ news.change }}%</span><img class="icon"
-                                                                 src="{{ url_for('static', filename='images/flash_red.ico') }}">
+                                                                 src="static/images/flash_red.ico">
                 {% endif %}
             {% endif %}
         </div>
