@@ -17,9 +17,10 @@
                 {% if news.change > 0 %}
                 <span class="green"> {{ news.change }}%</span><img class="icon"
                                                                    src="static/images/flash_green.ico">
-                {% else %}
+                {% elif news.change < 0 %}
                 <span class="red"> {{ news.change }}%</span><img class="icon"
                                                                  src="static/images/flash_red.ico">
+                {% else %}
                 {% endif %}
             {% endif %}
         </div>

@@ -1,13 +1,16 @@
 from datetime import datetime, timedelta
+import logging
 
 from flaskr.sending_bot import sending_bot
 from flaskr.db import db_session
 from flaskr.news.model import News
-from flaskr.news.parse import get_news
 
 
 def send_to_bot(news) -> None:
-    """Отправка новости в бот, если она удовлетворяет условиям
+    """
+    Sending news to the bot if flag is_on_spb is True
+    :param news: all news
+    :return: no return
     """
 
     if news["is_on_spb"]:
@@ -15,30 +18,33 @@ def send_to_bot(news) -> None:
         sending_bot.send_news()
 
 
-def save_news_to_db() -> None:
-    """Сохранение новостей в базу данных
+def save_news_to_db(all_news) -> None:
+    """
+    Saving news to the DB.
+    :param all_news: all news
+    :return: no return
     """
 
-    all_news = get_news()
     for one_news in all_news:
-        first_news_in_db = News.query.filter(News.id == one_news['id']).first()
+        first_news_in_db = News.query.filter(News.title == one_news['title']).first()
 
         if not first_news_in_db:
-            print(f"News with title '{one_news['title']}' added to DB.")
-            one_news_to_db_format = News(one_news)
-            db_session.add(one_news_to_db_format)
-
+            logging.info(f"News with title '{one_news['title']}' added to DB.")
+            db_session.add(News(one_news))
             send_to_bot(one_news)
 
         elif one_news['change'] != first_news_in_db.change:
-            print(f"The price of {first_news_in_db.ticker} updated")
+            logging.info(f"The price of {first_news_in_db.ticker} updated")
             first_news_in_db.change = one_news['change']
 
     db_session.commit()
 
 
 def get_news_from_db(only_spb=False):
-    """Извлечение новостей из базы данных
+    """
+    Gets news from DB.
+    :param only_spb: flag, if True, returns only news with this flag
+    :return: news from DB
     """
 
     if only_spb:
@@ -49,12 +55,15 @@ def get_news_from_db(only_spb=False):
 
 
 def delete_news_from_db() -> None:
-    """Удаление старых новосте из БД
+    """
+    Deleting news older than 2 days from DB
+    :return: no return
     """
 
-    old_news = News.query.filter(News.date < datetime.now() - timedelta(days=2))
+    old_news = News.query.filter(News.date < (datetime.now() - timedelta(days=2)))
     num_old_news = old_news.count()
     for one_old_news in old_news:
         db_session.delete(one_old_news)
     db_session.commit()
-    print(f"{num_old_news} old news were deleted from the DB.")
+
+    logging.info(f"{num_old_news} old news were deleted from the DB.")

@@ -5,7 +5,11 @@ from flaskr.tickers.extract_from_finviz import get_finviz_fundamentals
 
 
 def index_error_handler(list_, index_):
-    """If encounters IndexError or KeyEror, returns an empty dictionary
+    """
+    If encounters IndexError, returns an empty dictionary.
+    :param list_: list in which we search element
+    :param index_: index of element
+    :return: element in the list or empty dictionary
     """
 
     try:
@@ -15,40 +19,42 @@ def index_error_handler(list_, index_):
     return list_element
 
 
-def value_error_handler(value):
-    """If encounters ValueError, returns  0"""
-
-    try:
-        return_value = float(value[:-1])
-    except ValueError:
-        return_value = 0
-    return return_value
-
-
-def add_finviz_fundamentals(dict_to_add, dict_from_finviz):
+def value_handler(value):
     """
+    If encounters '-', returns 0.
+    :param value: value from the field in finviz dictionary
+    :return: int value from this field
+    """
+
+    if value == '-':
+        return 0
+    elif value[-1] == '%':
+        return float(value[:-1])
+    else:
+        return value
+
+
+def add_finviz_fundamentals(dict_to_add, dict_from_finviz) -> None:
+    """
+    Adding fundamentals from finviz dict to resulting dictionary.
     :param dict_to_add: dictionary to add fundamentals from finviz
     :param dict_from_finviz: fundamentals from finviz
     """
 
     dict_to_add['price'] = float(dict_from_finviz.get('Price'))
     dict_to_add['sector'] = dict_from_finviz.get('sector')
-    dict_to_add['pe_ratio'] = float(dict_from_finviz.get('P/E'))
-    dict_to_add['peg_ratio'] = float(dict_from_finviz.get('PEG'))
-    dict_to_add['pb_ratio'] = float(dict_from_finviz.get('P/B'))
-    dict_to_add['dividend_yield'] = value_error_handler(dict_from_finviz.get('Dividend %'))
-    dict_to_add['payout_ratio'] = float(dict_from_finviz.get('Payout')[:-1]) * 0.01
-    dict_to_add['roe'] = float(dict_from_finviz.get('ROE')[:-1]) * 0.01
-    dict_to_add['roa'] = float(dict_from_finviz.get('ROA')[:-1]) * 0.01
-
-    dict_to_add['pe_sector'] = float(dict_from_finviz.get('pe_sector'))
-    dict_to_add['pe_country'] = float(dict_from_finviz.get('pe_country'))
-    dict_to_add['div_sector'] = float(dict_from_finviz.get('div_sector'))
-    dict_to_add['div_country'] = float(dict_from_finviz.get('pe_country'))
+    dict_to_add['pe_ratio'] = value_handler(dict_from_finviz.get('P/E'))
+    dict_to_add['peg_ratio'] = value_handler(dict_from_finviz.get('PEG'))
+    dict_to_add['pb_ratio'] = value_handler(dict_from_finviz.get('P/B'))
+    dict_to_add['dividend_yield'] = value_handler(dict_from_finviz.get('Dividend %'))
+    dict_to_add['payout_ratio'] = value_handler(dict_from_finviz.get('Payout')) * 0.01
+    dict_to_add['roe'] = value_handler(dict_from_finviz.get('ROE')) * 0.01
+    dict_to_add['roa'] = value_handler(dict_from_finviz.get('ROA')) * 0.01
 
 
-def add_financial_ratios(dict_to_add, ticker):
+def add_financial_ratios(dict_to_add, ticker) -> None:
     """
+    Adding financial ratios to the dict.
     :param dict_to_add: dictionary to add info
     :param ticker: ticker we are working with
     """
@@ -61,13 +67,14 @@ def add_financial_ratios(dict_to_add, ticker):
 
     dict_to_add['debt_equity_ratio_now'] = float(financial_ratios_json_now.get('debtEquityRatio', 0))
     dict_to_add['debt_equity_ratio_5ya'] = float(financial_ratios_json_5ya.get('debtEquityRatio', 0))
-    dict_to_add['interest_coverage'] = float(financial_ratios_json_now['interestCoverage'])
+    dict_to_add['interest_coverage'] = float(financial_ratios_json_now.get('interestCoverage', 0))
     dict_to_add['roce_now'] = float(financial_ratios_json_now.get('returnOnCapitalEmployed', 0))
     dict_to_add['roce_3ya'] = float(financial_ratios_json_3ya.get('returnOnCapitalEmployed', 0))
 
 
-def add_financial_growth_data(dict_to_add, ticker):
+def add_financial_growth_data(dict_to_add, ticker) -> None:
     """
+    Adding financial growth data to the dict.
     :param dict_to_add: dictionary to add info
     :param ticker: ticker we are working with
     """
@@ -88,6 +95,7 @@ def add_financial_growth_data(dict_to_add, ticker):
 
 def add_income_stmt_data(dict_to_add, ticker):
     """
+    Adding income statement data to the dict.
     :param dict_to_add: dictionary to add info
     :param ticker: ticker we are working with
     """
@@ -103,6 +111,7 @@ def add_income_stmt_data(dict_to_add, ticker):
 
 def add_historical_rating(dict_to_add, ticker):
     """
+    Adding historical rating to the dict.
     :param dict_to_add: dictionary to add info
     :param ticker: ticker we are working with
     """
@@ -123,6 +132,7 @@ def add_historical_rating(dict_to_add, ticker):
 
 def add_profile_data(dict_to_add, ticker):
     """
+    Adding profile data to the dict.
     :param dict_to_add: dictionary to add info
     :param ticker: ticker we are working with
     """
@@ -135,6 +145,7 @@ def add_profile_data(dict_to_add, ticker):
 
 def add_balance_sheet_data(dict_to_add, ticker):
     """
+    Adding balance sheet data to the dict.
     :param dict_to_add: dictionary to add info
     :param ticker: ticker we are working with
     """
@@ -151,6 +162,7 @@ def add_balance_sheet_data(dict_to_add, ticker):
 
 def add_cash_flow_data(dict_to_add, ticker):
     """
+    Adding cash flow data to the dict.
     :param dict_to_add: dictionary to add info
     :param ticker: ticker we are working with
     """
@@ -161,20 +173,23 @@ def add_cash_flow_data(dict_to_add, ticker):
     cash_flow_json_10ya = index_error_handler(cash_flow_json, 9)
 
     dict_to_add['operating_cash_flow'] = cash_flow_json_now.get('operatingCashFlow', 0)
-    dict_to_add['dividends_paid_now'] = -float(cash_flow_json_now.get('dividendsPaid', 0))
-    dict_to_add['dividends_paid_10ya'] = -float(cash_flow_json_10ya.get('dividendsPaid', 0))
+    dict_to_add['dividends_paid_now'] = float(-cash_flow_json_now.get('dividendsPaid', 0))
+    dict_to_add['dividends_paid_10ya'] = float(-cash_flow_json_10ya.get('dividendsPaid', 0))
 
 
 def extract_fundamentals(ticker):
-    """Extracting fundamentals by Ticker from API and finviz site
+    """
+    Extracting fundamentals by Ticker from API and finviz site.
+    :param ticker: ticker which fundamentals we are searching for
+    :return: fundamentals in the form of dictionary
     """
 
-    # TO DO - status code check
     fundamentals = dict()
     fundamentals['ticker'] = ticker
 
     # adding fundamentals to returning dictionary
-    add_finviz_fundamentals(fundamentals, get_finviz_fundamentals(ticker))
+    finviz_fundamentals = get_finviz_fundamentals(ticker)
+    add_finviz_fundamentals(fundamentals, finviz_fundamentals)
     add_financial_ratios(fundamentals, ticker)
     add_financial_growth_data(fundamentals, ticker)
     add_income_stmt_data(fundamentals, ticker)
@@ -190,7 +205,10 @@ def extract_fundamentals(ticker):
 
 
 def get_recommendations(dictionary):
-    """Getting analytics recommendations from fundamentals
+    """
+    Getting analytics recommendations from fundamentals dictionary.
+    :param dictionary: dictionary in which we are searching for recommendations
+    :return: recommendations in the form of dictionary
     """
 
     dict_recommendations = dict()

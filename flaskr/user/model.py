@@ -3,6 +3,10 @@ from flaskr.db import Base
 
 
 class BotUser(Base):
+    """
+    Model for keeping user ids and names.
+    """
+
     __tablename__ = "bot_user"
 
     id = Column(Integer, primary_key=True)

@@ -2,8 +2,9 @@
 .idea/
 __pycache__/
 env/
+config.py
+flaskr/graphs/*
 flaskr/static/data/ListingSecurityList.csv
 flaskr.db
-config.py
+flaskr.log
 just_for_test
-flaskr/graphs/*

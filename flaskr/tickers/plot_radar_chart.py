@@ -1,23 +1,18 @@
 from datetime import datetime
+import logging
 from math import pi
 import matplotlib
 import matplotlib.pyplot as plt
 import pathlib
+from config import CHART_FILENAME, CHART_FILEPATH
 matplotlib.use('Agg')
-
-RED = 'red'
-ORANGE_RED = '#FF4500'
-ORANGE = 'orange'
-YELLOW = 'yellow'
-GREEN_YELLOW = '#ADFF2F'
-GREEN = 'green'
-
-FILEPATH = "flaskr/graphs/"
-FILENAME = "_chart_perspective.png"
 
 
 def is_graph_exists(complete_filename):
-    """Verifies if graph on this date exists already
+    """
+    Verifies if graph on this date exists already.
+    :param complete_filename: path to the graph
+    :return: does this graph exist or not
     """
 
     fname = pathlib.Path(complete_filename)
@@ -30,38 +25,44 @@ def is_graph_exists(complete_filename):
 
 
 def get_color(score_):
-    """Get color according to score
+    """
+    Get color according to score.
+    :param score_: company perspective score
+    :return: color
     """
 
     if score_ < 5:
-        return RED
+        return 'red'
     elif score_ < 10:
-        return ORANGE_RED
+        return '#FF4500'
     elif score_ < 15:
-        return ORANGE
+        return 'orange'
     elif score_ < 20:
-        return YELLOW
+        return 'yellow'
     elif score_ < 25:
-        return GREEN_YELLOW
+        return '#ADFF2F'
     else:
-        return GREEN
+        return 'green'
 
 
-def create_and_save_plot(ticker, coefficients):
-    """Create spider plot according to coefficients calculated on the basis of ticker fundamentals
+def create_and_save_plot(coefficients, complete_filename) -> None:
+    """
+    Create spider plot according to the company perspective checks.
+    :param coefficients: perspective checks
+    :param complete_filename: path to the graph
     """
 
     # categories
     categories = coefficients.keys()
-    N = len(categories)
+    axes_number = len(categories)
 
-    values = [sum(list_) for list_ in coefficients.values()]
+    values = [sum(dict_.values()) for dict_ in coefficients.values()]
     score = sum(values)
     color = get_color(score)
     values += values[:1]
 
     # angles for chart
-    angles = [n / float(N) * 2 * pi for n in range(N)]
+    angles = [n / float(axes_number) * 2 * pi for n in range(axes_number)]
     angles += [2*pi]
 
     # Initialise the spider plot
@@ -79,16 +80,19 @@ def create_and_save_plot(ticker, coefficients):
     plt.fill(angles, values, color=color, alpha=0.5)
 
     # Saving picture
-    complete_filename = f"{FILEPATH}{ticker}{FILENAME}"
     plt.savefig(complete_filename)
+    logging.info(f"Graph {complete_filename} created.")
     plt.clf()
 
 
-def check_perspective_chart(ticker, coefficients):
-    """If chart doesn't exist, we create and save it
+def check_perspective_chart(ticker, coefficients) -> None:
+    """
+    If chart doesn't exist, we create and save it.
+    :param ticker: stocks ticker
+    :param coefficients: company perspective checks
     """
 
-    complete_filename = f"{FILEPATH}{ticker}{FILENAME}"
+    complete_filename = f"{CHART_FILEPATH}{ticker}{CHART_FILENAME}"
     if not is_graph_exists(complete_filename):
-        create_and_save_plot(ticker, coefficients)
+        create_and_save_plot(coefficients, complete_filename)
 

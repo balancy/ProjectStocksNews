@@ -2,12 +2,13 @@ from bs4 import BeautifulSoup
 import datetime
 import json
 import requests
-
 import config
 
 
 def get_tickers():
-    """Извдечение тикеров всех бумаг, торгующихся на СПб бирже.
+    """
+    Gets stocks tickers from the json file.
+    :return: tickers in the form of dictionary
     """
 
     filename = config.TICKERS_FILENAME
@@ -17,7 +18,10 @@ def get_tickers():
 
 
 def get_html(url):
-    """Получение ответа по ссылке.
+    """
+    Gets html response text.
+    :param url: html url
+    :return: html response text
     """
 
     try:
@@ -30,11 +34,12 @@ def get_html(url):
 
 
 def get_one_record_news(one_news, tickers_spb):
-    """Запись в словарь одной новости.
     """
-
-    # authors_dict = {"by MarketWatch Automation": "BREAKING", "by Barron's": "BARRON'S"}
-    id_ = int(one_news['data-docid'])
+    Gets one parsed news in the form of dictionary
+    :param one_news: link to one news
+    :param tickers_spb: flag to see if ticker traded on SPB stocks exchange
+    :return: dictionary
+    """
 
     one_news = one_news.find('div', class_='article__content')
 
@@ -56,13 +61,15 @@ def get_one_record_news(one_news, tickers_spb):
     is_on_spb = True if ticker in tickers_spb else False
 
     one_record_dict = {'title': title, 'url': url, 'summary': summary, 'date': date, 'ticker': ticker,
-                       'change': change, 'author': author, 'is_on_spb': is_on_spb, 'id': id_}
+                       'change': change, 'author': author, 'is_on_spb': is_on_spb}
 
     return one_record_dict
 
 
 def get_news():
-    """Получение всех новостей с rss ленты.
+    """
+    Parsing all news from site RSS.
+    :return: all news in the form of list of dictionaries
     """
 
     list_news = list()

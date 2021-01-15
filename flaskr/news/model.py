@@ -3,9 +3,13 @@ from flaskr.db import Base
 
 
 class News(Base):
+    """
+    SQL Alchemy Model for News entity.
+    """
+
     __tablename__ = "news"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
     url = Column(String, nullable=False)
     summary = Column(String)
@@ -16,7 +20,6 @@ class News(Base):
     is_on_spb = Column(Boolean)
 
     def __init__(self, json):
-        self.id = json['id']
         self.title = json['title']
         self.url = json['url']
         self.summary = json.get('summary', '')
@@ -29,7 +32,7 @@ class News(Base):
     def to_json(self):
         return {'title': self.title, 'url': self.url, 'summary': self.summary,
                 'date': self.date, 'ticker': self.ticker, 'change': self.change,
-                'author': self.author, 'is_on_spb': self.is_on_spb, 'id': self.id}
+                'author': self.author, 'is_on_spb': self.is_on_spb}
 
     def __repr__(self):
         return f'<News {self.title} {self.url}>'
