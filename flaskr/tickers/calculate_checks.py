@@ -1,6 +1,6 @@
 from flaskr.tickers.db_interact import get_stocks_fundamentals
 from flaskr.tickers.extract_fundamentals import get_recommendations
-from flaskr.tickers.plot_radar_chart import check_perspective_chart
+from flaskr.tickers.diagram import Diagram
 
 
 US_INFLATION = 0.62                 # now constant - needs to be extracted
@@ -50,16 +50,16 @@ def get_value_description(dict_):
     """
 
     value_descr = list()
-    value_descr.append(f"Is the discounted cash flow value ({dict_['dcf']}) less than 20% of the share price "
-                       f"({dict_['price']})?")
-    value_descr.append(f"Is the discounted cash flow value ({dict_['dcf']}) less than 40% of the share price "
-                       f"({dict_['price']})?")
-    value_descr.append(f"Is the P/E ratio ({dict_['pe_ratio']}) less than the market average ({dict_['pe_country']}) "
-                       f"but still greater than 0?")
-    value_descr.append(f"Is the P/E ratio ({dict_['pe_ratio']}) less than the industry average ({dict_['pe_sector']}) "
-                       f"but still greater than 0?")
-    value_descr.append(f"Is the PEG ratio ({dict_['peg_ratio']}) within a reasonable range (0 to 1)?")
-    value_descr.append(f"Is the P/B ratio ({dict_['pb_ratio']}) within a reasonable range (0 to 1)?")
+    value_descr.append(f"Is the discounted cash flow value (<b>{dict_['dcf']}</b>) less than 20% of the share price "
+                       f"(<b>{dict_['price']}</b>)?")
+    value_descr.append(f"Is the discounted cash flow value (<b>{dict_['dcf']}</b>) less than 40% of the share price "
+                       f"(<b>{dict_['price']}</b>)?")
+    value_descr.append(f"Is the P/E ratio (<b>{dict_['pe_ratio']}</b>) less than the market average "
+                       f"(<b>{dict_['pe_country']}</b>) but still greater than 0?")
+    value_descr.append(f"Is the P/E ratio (<b>{dict_['pe_ratio']}</b>) less than the industry average "
+                       f"(<b>{dict_['pe_sector']}</b>) but still greater than 0?")
+    value_descr.append(f"Is the PEG ratio (<b>{dict_['peg_ratio']}</b>) within a reasonable range (0 to 1)?")
+    value_descr.append(f"Is the P/B ratio (<b>{dict_['pb_ratio']}</b>) within a reasonable range (0 to 1)?")
 
     return value_descr
 
@@ -90,18 +90,18 @@ def get_health_description(dict_):
     """
 
     health_descr = list()
-    health_descr.append(f"Are short term assets ({human_format(dict_['short_term_assets'])}) greater than "
-                        f"short term liabilities ({human_format(dict_['short_term_liabilities'])})?")
-    health_descr.append(f"Are short term assets ({human_format(dict_['short_term_assets'])}) greater than long term "
-                        f"liabilities ({human_format(dict_['long_term_liabilities'])})?")
-    health_descr.append(f"Has the debt to equity ratio ({round(dict_['debt_equity_ratio_now'], 2)}) decreased in the "
-                        f"past 5 years (vs {round(dict_['debt_equity_ratio_5ya'], 2)})?")
-    health_descr.append(f"Is the debt to equity ratio ({round(dict_['debt_equity_ratio_now'], 2)}) less than 40% "
-                        f"(0.4)?")
-    health_descr.append(f"Are 20% of debt ({human_format(dict_['total_debt'])}) covered by operating cash flows "
-                        f"({human_format(dict_['operating_cash_flow'])})?")
-    health_descr.append(f"Are earnings greater than 5x ({round(dict_['interest_coverage'], 2)}) the interest on debt "
-                        f"(if company pays interest at all)?")
+    health_descr.append(f"Are short term assets (<b>{human_format(dict_['short_term_assets'])}</b>) greater than "
+                        f"short term liabilities (<b>{human_format(dict_['short_term_liabilities'])}</b>)?")
+    health_descr.append(f"Are short term assets (<b>{human_format(dict_['short_term_assets'])}</b>) greater than long "
+                        f"term liabilities (<b>{human_format(dict_['long_term_liabilities'])}</b>)?")
+    health_descr.append(f"Has the debt to equity ratio (<b>{round(dict_['debt_equity_ratio_now'], 2)}</b>) decreased in"
+                        f" the past 5 years (vs <b>{round(dict_['debt_equity_ratio_5ya'], 2)}</b>)?")
+    health_descr.append(f"Is the debt to equity ratio (<b>{round(dict_['debt_equity_ratio_now'], 2)}</b>) less than 40%"
+                        f" (0.4)?")
+    health_descr.append(f"Are 20% of debt (<b>{human_format(dict_['total_debt'])}</b>) covered by operating cash flows "
+                        f"(<b>{human_format(dict_['operating_cash_flow'])}</b>)?")
+    health_descr.append(f"Are earnings greater than 5x (<b>{round(dict_['interest_coverage'], 2)}</b>) the interest on "
+                        f"debt (if company pays interest at all)?")
 
     return health_descr
 
@@ -136,18 +136,18 @@ def get_dividends_description(dict_):
     """
 
     div_description = list()
-    div_description.append(f"Is the current dividend yield ({dict_['dividend_yield']}) higher than the industry "
-                           f"average ({dict_['div_sector']})?")
-    div_description.append(f"Is the current dividend yield ({dict_['dividend_yield']}) higher than the market average "
-                           f"({dict_['div_country']})?")
+    div_description.append(f"Is the current dividend yield (<b>{dict_['dividend_yield']}</b>) higher than the industry "
+                           f"average (<b>{dict_['div_sector']}</b>)?")
+    div_description.append(f"Is the current dividend yield (<b>{dict_['dividend_yield']}</b>) higher than the market "
+                           f"average (<b>{dict_['div_country']}</b>)?")
     div_description.append(f"Is the growth in dividends per share over the past 10 years positive "
-                           f"({dict_['ten_years_dps_growth']})?")
-    div_description.append(f"Has the dividend payed ({human_format(dict_['dividends_paid_now'])}) increased in the past"
-                           f" 10 years (vs {human_format(dict_['dividends_paid_10ya'])})?")
-    div_description.append(f"Are dividends paid well covered by Net Profit (0 < {round(dict_['payout_ratio'], 2)} < "
-                           f"0.9)?")
-    div_description.append(f"Is the growth in dividends per share ({round(dict_['dps_growth'], 3)}) over the past year "
-                           f"positive?")
+                           f"(<b>{dict_['ten_years_dps_growth']}</b>)?")
+    div_description.append(f"Has the dividend payed (<b>{human_format(dict_['dividends_paid_now'])}</b>) increased in "
+                           f"the past 10 years (vs <b>{human_format(dict_['dividends_paid_10ya'])}</b>)?")
+    div_description.append(f"Are dividends paid well covered by Net Profit (0 < <b>{round(dict_['payout_ratio'], 2)}</b>"
+                           f" < 0.9)?")
+    div_description.append(f"Is the growth in dividends per share (<b>{round(dict_['dps_growth'], 3)}</b>) over the "
+                           f"past year positive?")
 
     return div_description
 
@@ -181,16 +181,17 @@ def get_past_description(dict_):
     """
 
     past_description = list()
-    past_description.append(f"Is Has Earnings Per Share (EPS) growth ({round(dict_['growth_eps_now'], 2)}) exceeded "
-                            f"20% (0.2) over the past year?")
-    past_description.append(f"Is Have Earnings Per Share (EPS={dict_['eps_now']}) increased in past 5 years "
-                            f"(vs {dict_['eps_5ya']})?")
-    past_description.append(f"Is the current EPS growth ({round(dict_['growth_eps_now'], 2)}) higher than the average "
-                            f"annual growth over the past 5 years (vs {round(dict_['growth_eps_5ya'], 2)})?")
-    past_description.append(f"Is the Return on Equity (ROE={round(dict_['roe'], 2)}) higher than 20% (0.2)?")
-    past_description.append(f"Has the Return on Capital Employed (ROCE={round(dict_['roce_now'], 2)}) increased from 3 "
-                            f"years ago (vs {round(dict_['roce_3ya'], 2)})?")
-    past_description.append(f"Is the Return on Assets (ROA={round(dict_['roa'], 2)}) above 5% (0.05)?")
+    past_description.append(f"Is Has Earnings Per Share (EPS) growth (<b>{round(dict_['growth_eps_now'], 2)}</b>)"
+                            f" exceeded 20% (0.2) over the past year?")
+    past_description.append(f"Is Have Earnings Per Share (EPS=<b>{dict_['eps_now']}</b>) increased in past 5 years "
+                            f"(vs <b>{dict_['eps_5ya']}</b>)?")
+    past_description.append(f"Is the current EPS growth (<b>{round(dict_['growth_eps_now'], 2)}</b>) higher than the "
+                            f"average annual growth over the past 5 years "
+                            f"(vs <b>{round(dict_['growth_eps_5ya'], 2)}</b>)?")
+    past_description.append(f"Is the Return on Equity (ROE=<b>{round(dict_['roe'], 2)}</b>) higher than 20% (0.2)?")
+    past_description.append(f"Has the Return on Capital Employed (ROCE=<b>{round(dict_['roce_now'], 2)}</b>) increased "
+                            f"from 3 years ago (vs <b>{round(dict_['roce_3ya'], 2)}</b>)?")
+    past_description.append(f"Is the Return on Assets (ROA=<b>{round(dict_['roa'], 2)}</b>) above 5% (0.05)?")
 
     return past_description
 
@@ -224,18 +225,21 @@ def get_future_description(dict_):
     """
 
     future_description = list()
-    future_description.append(f"Is the annual growth rate in earnings ({round(dict_['net_income_growth'], 2)}) expected"
-                              f" to exceed the low risk savings rate ({US_LOW_RISK}) + inflation ({US_INFLATION})?")
-    future_description.append(f"Is the annual growth rate in earnings ({round(dict_['net_income_growth'], 2)}) expected"
-                              f" to exceed the market average in the country of listing ({US_NET_INCOME_GROWTH_RATE})?")
-    future_description.append(f"Is the annual growth rate in revenue ({round(dict_['revenue_growth'], 2)}) expected to "
-                              f"exceed the market average in the country of listing ({US_REVENUE_GROWTH_RATE})?")
-    future_description.append(f"Is the annual growth rate in earnings ({round(dict_['net_income_growth'], 2)}) above "
+    future_description.append(f"Is the annual growth rate in earnings (<b>{round(dict_['net_income_growth'], 2)}</b>) "
+                              f"expected to exceed the low risk savings rate (<b>{US_LOW_RISK}</b>) + inflation "
+                              f"(<b>{US_INFLATION}</b>)?")
+    future_description.append(f"Is the annual growth rate in earnings (<b>{round(dict_['net_income_growth'], 2)}</b>) "
+                              f"expected to exceed the market average in the country of listing "
+                              f"(<b>{US_NET_INCOME_GROWTH_RATE}</b>)?")
+    future_description.append(f"Is the annual growth rate in revenue (<b>{round(dict_['revenue_growth'], 2)}</b>) "
+                              f"expected to exceed the market average in the country of listing "
+                              f"(<b>{US_REVENUE_GROWTH_RATE}</b>)?")
+    future_description.append(f"Is the annual growth rate in earnings (<b>{round(dict_['net_income_growth'], 2)}</b>) "
+                              f"above 20% (0.2)?")
+    future_description.append(f"Is the annual growth rate in revenue (<b>{round(dict_['revenue_growth'], 2)}</b>) above "
                               f"20% (0.2)?")
-    future_description.append(f"Is the annual growth rate in revenue ({round(dict_['revenue_growth'], 2)}) above 20% "
-                              f"(0.2)?")
     future_description.append(f"Is the Return on Equity (ROE) in 3 years expected to be over 20% "
-                              f"({dict_['rating_ROE']>3})?")
+                              f"(<b>{dict_['rating_ROE']>3}</b>)?")
 
     return future_description
 
@@ -266,9 +270,13 @@ def check_graph_and_get_recommendations(ticker):
     :return company perspective checks
     """
 
+    diagram = Diagram(ticker)
     fundamentals = get_stocks_fundamentals(ticker)
     checks = get_checks(fundamentals)
-    check_perspective_chart(ticker, checks)
+
+    if not diagram.exists():
+        diagram.set_checks(checks)
+        diagram.create_and_save_plot()
 
     recommendations = get_recommendations(fundamentals)
 

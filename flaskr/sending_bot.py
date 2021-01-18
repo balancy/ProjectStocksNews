@@ -1,7 +1,6 @@
 from telegram import ParseMode, Bot
 import logging
-from config import BOT_API_KEY, YF_URL, CHART_FILENAME, CHART_FILEPATH
-from flaskr.tickers.calculate_checks import check_graph_and_get_recommendations
+from config import BOT_API_KEY, YF_URL
 from flaskr.user.model import BotUser
 
 
@@ -22,7 +21,7 @@ class SendingBot(Bot):
         users = BotUser.query.all()
         for user in users:
             self.send_message(chat_id=user.id, text=self.message, parse_mode=ParseMode.HTML)
-            logging.info(f"'News was sent to the user {user.name} ({user.id})")
+            logging.info(f"'News was sent to the user {user.username} ({user.id})")
 
     def format_from_json(self, json) -> None:
         """
@@ -31,8 +30,8 @@ class SendingBot(Bot):
         """
 
         self.message = f"<a href='{json['url']}'>{json['title']}</a>\n"
-        self.message += f"<b><a href='{YF_URL}{json['ticker']}'>{json['ticker']}</a>: {json['change']}%</b>\n"
-        self.message += f"/graph - receive company perspective graph"
+        self.message += f"<b><a href='{YF_URL}{json['ticker']}'>{json['ticker']}</a>: {json['change']}%</b>\n\n"
+        self.message += f"/diagram_{json['ticker']} - show {json['ticker']} perspectivity diagram"
 
 
 sending_bot = SendingBot()

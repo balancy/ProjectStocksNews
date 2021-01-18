@@ -47,7 +47,7 @@
         {% for line in checks[check] %}
             <div>
             <img class="check" src="static/images/{% if checks[check][line] %}green{% else %}red{% endif %}_check.png">
-            <span>{{ line }}</span>
+            <span>{{ line|safe }}</span>
             </div>
         {% endfor %}
     {% endfor %}
