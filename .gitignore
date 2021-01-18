@@ -8,3 +8,4 @@ flaskr/static/data/ListingSecurityList.csv
 flaskr.db
 flaskr.log
 just_for_test
+test/*
