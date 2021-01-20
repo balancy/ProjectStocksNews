@@ -1,10 +1,11 @@
 from datetime import datetime
 import logging
+from sqlalchemy import exc
 
 from flaskr.db import db_session
-from flaskr.tickers.extract_fundamentals import extract_fundamentals
-from flaskr.tickers.extract_from_finviz import get_finviz_sector_country
-from flaskr.tickers.model import Fundamentals, CountryFundamentals, SectorFundamentals
+from flaskr.stocks.extract_fundamentals import extract_fundamentals
+from flaskr.stocks.extract_from_finviz import get_finviz_sector_country
+from flaskr.stocks.model import Fundamentals, CountryFundamentals, SectorFundamentals
 
 
 def get_country_sector_from_db(type_, name):
@@ -39,16 +40,19 @@ def create_and_get_country_sector_db_record(type_, dict_):
         record_in_db = SectorFundamentals(data_json)
 
     db_session.add(record_in_db)
-    db_session.commit()
-    logging.info(f"{type_} {record_in_db.name} was added to the DB.")
-
-    return record_in_db
+    try:
+        db_session.commit()
+        logging.info(f"{type_} {record_in_db.name} was added to DB.")
+        return record_in_db
+    except exc.SQLAlchemyError:
+        logging.info(f"Failed to add {type} fundamentals to DB.")
+        return False
 
 
 def update_and_get_country_sector_db_record(record_in_db, type_, dict_):
     """
     Updates a country or sector record in DB.
-    :param record: record in DB to update
+    :param record_in_db: record in DB to update
     :param type_: 'country' or 'sector'
     :param dict_: dictionary with all needed fundamentals on country and sector
     :return: updated DB record
@@ -58,10 +62,13 @@ def update_and_get_country_sector_db_record(record_in_db, type_, dict_):
     data_json = {'name': dict_[type_], 'pe': dict_[f'pe_{type_}'], 'div_yield': dict_[f'div_{type_}'],
                  'date': time_now}
     record_in_db.update(data_json)
-    db_session.commit()
-    logging.info(f"{type_} {record_in_db.name} was updated in the DB.")
-
-    return record_in_db
+    try:
+        db_session.commit()
+        logging.info(f"{type_} {record_in_db.name} was updated in DB.")
+        return record_in_db
+    except exc.SQLAlchemyError:
+        logging.info(f"Failed to update {type} fundamentals in DB.")
+        return False
 
 
 def get_actual_country_sector_fundamentals_from_db(type_, dict_):
@@ -113,10 +120,13 @@ def create_and_get_stocks_db_record(ticker):
     ticker_in_db.sector = get_actual_country_sector_fundamentals_from_db("sector", country_sector)
 
     db_session.add(ticker_in_db)
-    db_session.commit()
-    logging.info(f"Stocks ticker {ticker} was added to the DB.")
-
-    return ticker_in_db
+    try:
+        db_session.commit()
+        logging.info(f"Stocks ticker {ticker} was added to DB.")
+        return ticker_in_db
+    except exc.SQLAlchemyError:
+        logging.info(f"Failed to add {ticker} fundamentals to DB.")
+        return False
 
 
 def update_and_get_stocks_db_record(ticker_in_db):
@@ -133,10 +143,13 @@ def update_and_get_stocks_db_record(ticker_in_db):
     ticker_in_db.country = get_actual_country_sector_fundamentals_from_db("country", country_sector)
     ticker_in_db.sector = get_actual_country_sector_fundamentals_from_db("sector", country_sector)
 
-    db_session.commit()
-    logging.info(f"Stocks ticker {ticker_in_db.ticker} was updated in the DB.")
-
-    return ticker_in_db
+    try:
+        db_session.commit()
+        logging.info(f"Stocks ticker {ticker_in_db.ticker} was updated in DB.")
+        return ticker_in_db
+    except exc.SQLAlchemyError:
+        logging.info(f"Failed to update {ticker_in_db.ticker} fundamentals in DB.")
+        return False
 
 
 def get_stocks_fundamentals(ticker):
@@ -148,7 +161,7 @@ def get_stocks_fundamentals(ticker):
     """
 
     time_now = datetime.today()
-    ticker_in_db = get_stocks_from_db(ticker)
+    ticker_in_db = Fundamentals.query.filter(Fundamentals.ticker == ticker).first()
 
     if ticker_in_db:
         # if we have a record on stocks fundamentals id DB

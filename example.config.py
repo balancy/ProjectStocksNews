@@ -27,3 +27,11 @@ FINVIZ_HEADERS = {
 
 # yahoo finance
 YF_URL = "https://finance.yahoo.com/quote/"
+
+# diagram
+DIAGRAM_FILEPATH = "flaskr/diagrams/"
+DIAGRAM_FILENAME = "_diagram_perspective.png"
+
+# chart
+CHART_FILEPATH = "flaskr/charts/"
+CHART_FILENAME = "_chart.png"

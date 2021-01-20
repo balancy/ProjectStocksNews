@@ -31,7 +31,8 @@ class SendingBot(Bot):
 
         self.message = f"<a href='{json['url']}'>{json['title']}</a>\n"
         self.message += f"<b><a href='{YF_URL}{json['ticker']}'>{json['ticker']}</a>: {json['change']}%</b>\n\n"
-        self.message += f"/diagram_{json['ticker']} - show {json['ticker']} perspectivity diagram"
+        self.message += f"/diagram_{json['ticker']} - show perspective diagram and analysts rating\n"
+        self.message += f"/chart_{json['ticker']} - show history price chart\n\n"
 
 
 sending_bot = SendingBot()

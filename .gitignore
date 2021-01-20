@@ -3,8 +3,10 @@
 __pycache__/
 env/
 config.py
-flaskr/graphs/*
+flaskr/charts/*
+flaskr/diagrams/*
 flaskr/static/data/ListingSecurityList.csv
+flaskr/stocks/utils/hist_graph.old.py
 flaskr.db
 flaskr.log
 just_for_test

@@ -1,7 +1,8 @@
 from flask import Flask, render_template
 import logging
+from flaskr.db import db_session
 from config import BOT_LINK
-from flaskr.tickers.view import blueprint as fundamentals_blueprint
+from flaskr.stocks.view import blueprint as fundamentals_blueprint
 from flaskr.news.view import blueprint as news_blueprint
 from flaskr.tasks import get_scheduler
 
@@ -23,7 +24,6 @@ def create_app():
         """
         Handling page not found link.
         """
-
         return render_template('404.html'), 404
 
     @app.context_processor
@@ -31,8 +31,16 @@ def create_app():
         """
         Injecting bot url in our base.html template.
         """
-
         return dict(bot_link=BOT_LINK)
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        """
+        Rolling back the section when encounters problems with db operations.
+        """
+        if exception:
+            db_session.rollback()
+        db_session.remove()
 
     logging.basicConfig(
         filename="flaskr.log", level=logging.INFO,

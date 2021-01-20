@@ -43,8 +43,8 @@ def get_one_record_news(one_news, tickers_spb):
 
     one_news = one_news.find('div', class_='article__content')
 
-    title = one_news.find('a').text.strip()
-    url = one_news.find('a')['href']
+    title = one_news.find('a', class_='link').text.strip()
+    url = one_news.find('a', class_='link')['href']
     summary = one_news.find('p', class_='article__summary').text
     date = one_news.find('span', class_='article__timestamp')['data-est']
     date = datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')

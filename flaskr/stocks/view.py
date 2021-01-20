@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, send_from_directory
 from flaskr.news.parse import get_tickers
-from flaskr.tickers.calculate_checks import check_graph_and_get_recommendations
+from flaskr.stocks.calculate_checks import check_graph_and_get_recommendations
 
-blueprint = Blueprint('ticker', __name__, url_prefix='/tickers')
+blueprint = Blueprint('ticker', __name__, url_prefix='/stocks')
 
 
 @blueprint.route('/<ticker>')
@@ -13,7 +13,7 @@ def ticker_fundamentals(ticker):
     :return: shows ticker.html
     """
     try:
-        checks, recommendations = check_graph_and_get_recommendations(ticker)
+        checks, recommendations = check_graph_and_get_recommendations(ticker.upper())
     except NameError:
         return render_template('404.html', ticker=True)
 
@@ -31,14 +31,24 @@ def tickers():
     return render_template('tickers.html', tickers=_tickers, pagetitle="Tickers")
 
 
-@blueprint.route("/graphs/<path:path>")
-def get_graph(path):
+@blueprint.route("/charts/<path:path>")
+def get_chart(path):
     """
-    Gives access for project to the graphs folder.
-    :param path: path to the graph
+    Gives access for project to the charts folder.
+    :param path: path to the chart
     :return: graph
     """
-    return send_from_directory("graphs", path)
+    return send_from_directory("charts", path)
+
+
+@blueprint.route("/diagrams/<path:path>")
+def get_diagram(path):
+    """
+    Gives access for project to the diagrams folder.
+    :param path: path to the diagram
+    :return: graph
+    """
+    return send_from_directory("diagrams", path)
 
 
 @blueprint.route("/static/<path:path>")

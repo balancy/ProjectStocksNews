@@ -1,7 +1,7 @@
 from datetime import datetime
 import requests
 from config import FINANCIAL_API_KEY, FINANCIAL_BASE_URL
-from flaskr.tickers.extract_from_finviz import get_finviz_fundamentals
+from flaskr.stocks.extract_from_finviz import get_finviz_fundamentals
 
 
 def index_error_handler(list_, index_):

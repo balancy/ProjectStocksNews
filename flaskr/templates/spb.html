@@ -13,7 +13,7 @@
             <p class="summary">{{ news.summary }}</p>
             {% endif %}
             {% if news.ticker and news.change %}
-            <p class="p-tickers"><a class="a-tickers" href="{% if '.' in news.ticker %}https://finance.yahoo.com/quote/{% else %}/tickers/{% endif %}{{ news.ticker }}">{{ news.ticker.upper() }}</a>:
+            <p class="p-tickers"><a class="a-tickers" href="{% if '.' in news.ticker %}https://finance.yahoo.com/quote/{% else %}/stocks/{% endif %}{{ news.ticker }}">{{ news.ticker.upper() }}</a>:
                 {% if news.change > 0 %}
                 <span class="green"> {{ news.change }}%</span><img class="icon"
                                                                    src="static/images/flash_green.ico">

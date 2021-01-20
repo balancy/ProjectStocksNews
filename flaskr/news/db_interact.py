@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import logging
+from sqlalchemy import exc
 
 from flaskr.sending_bot import sending_bot
 from flaskr.db import db_session
@@ -18,7 +19,7 @@ def send_to_bot(news) -> None:
         sending_bot.send_news()
 
 
-def save_news_to_db(all_news) -> None:
+def save_news_to_db(all_news) -> bool:
     """
     Saving news to the DB.
     :param all_news: all news
@@ -29,15 +30,20 @@ def save_news_to_db(all_news) -> None:
         first_news_in_db = News.query.filter(News.title == one_news['title']).first()
 
         if not first_news_in_db:
-            logging.info(f"News with title '{one_news['title']}' added to DB.")
+            logging.info(f"Trying to add news with title '{one_news['title']}' to DB.")
             db_session.add(News(one_news))
             send_to_bot(one_news)
-
         elif one_news['change'] != first_news_in_db.change:
-            logging.info(f"The price of {first_news_in_db.ticker} updated")
+            logging.info(f"Trying to update price of {first_news_in_db.ticker} in DB.")
             first_news_in_db.change = one_news['change']
 
-    db_session.commit()
+    try:
+        db_session.commit()
+        logging.info(f"All news in DB are added and updated.")
+        return True
+    except exc.SQLAlchemyError:
+        logging.info(f"Failed to add or update news to DB.")
+        return False
 
 
 def get_news_from_db(only_spb=False):
@@ -54,7 +60,7 @@ def get_news_from_db(only_spb=False):
     return all_news
 
 
-def delete_news_from_db() -> None:
+def delete_news_from_db() -> bool:
     """
     Deleting news older than 2 days from DB
     :return: no return
@@ -64,6 +70,10 @@ def delete_news_from_db() -> None:
     num_old_news = old_news.count()
     for one_old_news in old_news:
         db_session.delete(one_old_news)
-    db_session.commit()
-
-    logging.info(f"{num_old_news} old news were deleted from the DB.")
+    try:
+        db_session.commit()
+        logging.info(f"{num_old_news} old news were deleted from the DB.")
+        return True
+    except exc.SQLAlchemyError:
+        logging.info("Failed to delete news from the DB.")
+        return False

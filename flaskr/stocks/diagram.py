@@ -4,7 +4,7 @@ from math import pi
 import matplotlib
 import matplotlib.pyplot as plt
 import pathlib
-from config import CHART_FILENAME, CHART_FILEPATH
+from config import DIAGRAM_FILENAME, DIAGRAM_FILEPATH
 matplotlib.use('Agg')
 
 
@@ -47,7 +47,7 @@ class Diagram:
         :return: does this graph exist or not
         """
 
-        fname = pathlib.Path(f"{CHART_FILEPATH}{self.ticker}{CHART_FILENAME}")
+        fname = pathlib.Path(f"{DIAGRAM_FILEPATH}{self.ticker}{DIAGRAM_FILENAME}")
         if fname.exists():
             file_mtime = datetime.fromtimestamp(fname.stat().st_mtime)
             if file_mtime.day == datetime.now().day:
@@ -59,7 +59,7 @@ class Diagram:
         Create spider plot according to the company perspective checks.
         """
 
-        fname = pathlib.Path(f"{CHART_FILEPATH}{self.ticker}{CHART_FILENAME}")
+        fname = pathlib.Path(f"{DIAGRAM_FILEPATH}{self.ticker}{DIAGRAM_FILENAME}")
         # categories
         categories = self.checks.keys()
         axes_number = len(categories)

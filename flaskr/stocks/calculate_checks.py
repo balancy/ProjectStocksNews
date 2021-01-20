@@ -1,6 +1,6 @@
-from flaskr.tickers.db_interact import get_stocks_fundamentals
-from flaskr.tickers.extract_fundamentals import get_recommendations
-from flaskr.tickers.diagram import Diagram
+from flaskr.stocks.db_interact import get_stocks_fundamentals
+from flaskr.stocks.extract_fundamentals import get_recommendations
+from flaskr.stocks.diagram import Diagram
 
 
 US_INFLATION = 0.62                 # now constant - needs to be extracted

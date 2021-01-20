@@ -4,7 +4,7 @@
     <div class="row row-tickers">
         {% for ticker in tickers %}
             <div class="column col-3">
-                <p class="p-tickers"><a class="a-tickers" href="{% if '.' in ticker %}https://finance.yahoo.com/quote/{% else %}/tickers/{% endif %}{{ ticker }}">{{ticker.upper() }}</a></p>
+                <p class="p-tickers"><a class="a-tickers" href="{% if '.' in ticker %}https://finance.yahoo.com/quote/{% else %}/stocks/{% endif %}{{ ticker }}">{{ticker.upper() }}</a></p>
                 <p class="p-tickers-descr">{{ tickers[ticker] }}</p>
             </div>
         {% endfor %}

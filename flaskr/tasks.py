@@ -30,8 +30,10 @@ def get_scheduler(app):
             delete_news_from_db()
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(saving_news_to_db, 'interval', next_run_time=datetime.now(), minutes=10, id='saving_news_job')
-    scheduler.add_job(deleting_old_news, 'interval', next_run_time=datetime.now(), days=2, id='deleting_news_job')
+    scheduler.add_job(saving_news_to_db, 'interval', next_run_time=datetime.now(), minutes=10, id='saving_news_job',
+                      misfire_grace_time=600)
+    scheduler.add_job(deleting_old_news, 'interval', next_run_time=datetime.now(), days=2, id='deleting_news_job',
+                      misfire_grace_time=600)
     scheduler.start()
 
     return scheduler
