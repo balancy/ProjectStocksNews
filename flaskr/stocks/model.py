@@ -17,6 +17,7 @@ class Fundamentals(Base):
     country_id = Column(Integer, ForeignKey('country_fundamentals.id'))
 
     pe_ratio = Column(Float)
+    forward_pe = Column(Float)
     peg_ratio = Column(Float)
     pb_ratio = Column(Float)
     dividend_yield = Column(Float)
@@ -36,11 +37,9 @@ class Fundamentals(Base):
     ten_years_dps_growth = Column(Float)
     net_income_growth = Column(Float)
     revenue_growth = Column(Float)
-    growth_eps_now = Column(Float)
-    growth_eps_5ya = Column(Float)
-
-    eps_now = Column(Float)
-    eps_5ya = Column(Float)
+    eps_g_past_5y = Column(Float)
+    eps_g_next_5y = Column(Float)
+    eps_g_now = Column(Float)
 
     analysts_rating = Column(String(5))
     analysts_score = Column(Integer)
@@ -78,9 +77,17 @@ class Fundamentals(Base):
         dict_ = self.__dict__
         dict_['pe_sector'] = self.sector.pe
         dict_['div_sector'] = self.sector.div_yield
+        dict_['forward_pe_sector'] = self.sector.forward_pe
+        dict_['eps_g_next_5y_sector'] = self.sector.eps_g_next_5y
+        dict_['eps_g_past_5y_sector'] = self.sector.eps_g_past_5y
         dict_['pe_country'] = self.country.pe
         dict_['div_country'] = self.country.div_yield
+        dict_['forward_pe_country'] = self.country.forward_pe
+        dict_['eps_g_next_5y_country'] = self.country.eps_g_next_5y
+        dict_['eps_g_past_5y_country'] = self.country.eps_g_past_5y
+        dict_['sector_name'] = self.sector.name
         return dict_
+
 
 
 class SectorFundamentals(Base):
@@ -95,6 +102,9 @@ class SectorFundamentals(Base):
     pe = Column(Float)
     div_yield = Column(Float)
     date = Column(DateTime)
+    forward_pe = Column(Float)
+    eps_g_past_5y = Column(Float)
+    eps_g_next_5y = Column(Float)
     stocks = relationship("Fundamentals", backref="sector")
 
     def __init__(self, json):
@@ -120,6 +130,9 @@ class CountryFundamentals(Base):
     name = Column(String, nullable=False)
     pe = Column(Float)
     div_yield = Column(Float)
+    forward_pe = Column(Float)
+    eps_g_past_5y = Column(Float)
+    eps_g_next_5y = Column(Float)
     date = Column(DateTime)
     stocks = relationship("Fundamentals", backref="country")
 

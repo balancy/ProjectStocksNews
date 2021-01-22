@@ -24,7 +24,21 @@ def create_app():
         """
         Handling page not found link.
         """
-        return render_template('404.html'), 404
+        return render_template('error.html', parameter=404), 404
+
+    @app.errorhandler(408)
+    def page_timeout(e):
+        """
+        Handling page timeout error.
+        """
+        return render_template('error.html', parameter='timeout'), 408
+
+    @app.errorhandler(ConnectionError)
+    def page_timeout(e):
+        """
+        Handling page timeout link.
+        """
+        return render_template('error.html', parameter='connection')
 
     @app.context_processor
     def inject_bot_link():

@@ -1,12 +1,5 @@
 from flaskr.stocks.db_interact import get_stocks_fundamentals
-from flaskr.stocks.extract_fundamentals import get_recommendations
 from flaskr.stocks.diagram import Diagram
-
-
-US_INFLATION = 0.62                 # now constant - needs to be extracted
-US_LOW_RISK = 0.01
-US_NET_INCOME_GROWTH_RATE = -6.52   # https://csimarket.com/Industry/industry_growth_rates.php?rev&
-US_REVENUE_GROWTH_RATE = 1.63       # now constant - needs to be extracted
 
 
 def human_format(num):
@@ -56,8 +49,8 @@ def get_value_description(dict_):
                        f"(<b>{dict_['price']}</b>)?")
     value_descr.append(f"Is the P/E ratio (<b>{dict_['pe_ratio']}</b>) less than the market average "
                        f"(<b>{dict_['pe_country']}</b>) but still greater than 0?")
-    value_descr.append(f"Is the P/E ratio (<b>{dict_['pe_ratio']}</b>) less than the industry average "
-                       f"(<b>{dict_['pe_sector']}</b>) but still greater than 0?")
+    value_descr.append(f"Is the P/E ratio (<b>{dict_['pe_ratio']}</b>) less than the sector '{dict_['sector_name']}' average"
+                       f" (<b>{dict_['pe_sector']}</b>) but still greater than 0?")
     value_descr.append(f"Is the PEG ratio (<b>{dict_['peg_ratio']}</b>) within a reasonable range (0 to 1)?")
     value_descr.append(f"Is the P/B ratio (<b>{dict_['pb_ratio']}</b>) within a reasonable range (0 to 1)?")
 
@@ -136,10 +129,10 @@ def get_dividends_description(dict_):
     """
 
     div_description = list()
-    div_description.append(f"Is the current dividend yield (<b>{dict_['dividend_yield']}</b>) higher than the industry "
-                           f"average (<b>{dict_['div_sector']}</b>)?")
-    div_description.append(f"Is the current dividend yield (<b>{dict_['dividend_yield']}</b>) higher than the market "
-                           f"average (<b>{dict_['div_country']}</b>)?")
+    div_description.append(f"Is the current dividend yield (<b>{dict_['dividend_yield']}%</b>) higher than the sector "
+                           f"'{dict_['sector_name']}' average (<b>{dict_['div_sector']}%</b>)?")
+    div_description.append(f"Is the current dividend yield (<b>{dict_['dividend_yield']}%</b>) higher than the market "
+                           f"average (<b>{dict_['div_country']}%</b>)?")
     div_description.append(f"Is the growth in dividends per share over the past 10 years positive "
                            f"(<b>{dict_['ten_years_dps_growth']}</b>)?")
     div_description.append(f"Has the dividend payed (<b>{human_format(dict_['dividends_paid_now'])}</b>) increased in "
@@ -161,10 +154,9 @@ def get_past_checks(dict_):
 
     past = list()
 
-    # the next one needs to be calculated as if eps_growth is over the industry eps growth
-    past.append(1 if dict_['growth_eps_now'] > 0.2 else 0)
-    past.append(1 if dict_['eps_now'] > dict_['eps_5ya'] else 0)
-    past.append(1 if dict_['growth_eps_now'] > dict_['growth_eps_5ya'] else 0)
+    past.append(1 if dict_['eps_g_past_5y'] > dict_['eps_g_past_5y_sector'] else 0)
+    past.append(1 if dict_['eps_g_past_5y'] > 0 else 0)
+    past.append(1 if dict_['eps_g_now'] > dict_['eps_g_past_5y'] else 0)
     past.append(1 if dict_['roe'] > 0.2 else 0)
     past.append(1 if dict_['roce_now'] > dict_['roce_3ya'] else 0)
     # the next one needs to be calculated as if roa > industry average ROA
@@ -181,13 +173,14 @@ def get_past_description(dict_):
     """
 
     past_description = list()
-    past_description.append(f"Is Has Earnings Per Share (EPS) growth (<b>{round(dict_['growth_eps_now'], 2)}</b>)"
-                            f" exceeded 20% (0.2) over the past year?")
-    past_description.append(f"Is Have Earnings Per Share (EPS=<b>{dict_['eps_now']}</b>) increased in past 5 years "
-                            f"(vs <b>{dict_['eps_5ya']}</b>)?")
-    past_description.append(f"Is the current EPS growth (<b>{round(dict_['growth_eps_now'], 2)}</b>) higher than the "
-                            f"average annual growth over the past 5 years "
-                            f"(vs <b>{round(dict_['growth_eps_5ya'], 2)}</b>)?")
+    past_description.append(f"Has EPS growth (<b>{round(dict_['eps_g_past_5y'], 2)}%</b>) exceeded sector "
+                            f"'{dict_['sector_name']}' EPS growth (<b>{round(dict_['eps_g_past_5y_sector'], 2)}%</b>) "
+                            f"over the past 5 years ?")
+    past_description.append(f"Is Have Earnings Per Share growth over the past 5 years "
+                            f"(<b>{dict_['eps_g_past_5y']}</b>%) positive?")
+    past_description.append(f"Is the current EPS growth (<b>{round(dict_['eps_g_now'], 2)}%</b>) higher than the "
+                            f"average annual growth over the past 5 years (vs <b>{round(dict_['eps_g_past_5y'], 2)}%"
+                            f"</b>)?")
     past_description.append(f"Is the Return on Equity (ROE=<b>{round(dict_['roe'], 2)}</b>) higher than 20% (0.2)?")
     past_description.append(f"Has the Return on Capital Employed (ROCE=<b>{round(dict_['roce_now'], 2)}</b>) increased "
                             f"from 3 years ago (vs <b>{round(dict_['roce_3ya'], 2)}</b>)?")
@@ -205,14 +198,12 @@ def get_future_checks(dict_):
 
     future = list()
 
-    # for the next us_inflation and us_low_risk_investments to be calculated automatically
-    future.append(1 if dict_['net_income_growth'] > US_LOW_RISK + US_INFLATION else 0)
-    # the next one needs to calculate market average growth rate in earnings
-    future.append(1 if dict_['net_income_growth'] > US_NET_INCOME_GROWTH_RATE else 0)
-    future.append(1 if dict_['revenue_growth'] > US_REVENUE_GROWTH_RATE else 0)
+    future.append(1 if dict_['forward_pe'] > dict_['forward_pe_country'] else 0)
+    future.append(1 if dict_['forward_pe'] > dict_['forward_pe_sector'] else 0)
+    future.append(1 if dict_['eps_g_next_5y'] > dict_['eps_g_next_5y_country'] else 0)
+    future.append(1 if dict_['eps_g_next_5y'] > dict_['eps_g_next_5y_sector'] else 0)
     future.append(1 if dict_['net_income_growth'] > 0.2 else 0)
     future.append(1 if dict_['revenue_growth'] > 0.2 else 0)
-    future.append(1 if dict_['rating_ROE'] > 3 else 0)
 
     return future
 
@@ -225,21 +216,21 @@ def get_future_description(dict_):
     """
 
     future_description = list()
-    future_description.append(f"Is the annual growth rate in earnings (<b>{round(dict_['net_income_growth'], 2)}</b>) "
-                              f"expected to exceed the low risk savings rate (<b>{US_LOW_RISK}</b>) + inflation "
-                              f"(<b>{US_INFLATION}</b>)?")
-    future_description.append(f"Is the annual growth rate in earnings (<b>{round(dict_['net_income_growth'], 2)}</b>) "
-                              f"expected to exceed the market average in the country of listing "
-                              f"(<b>{US_NET_INCOME_GROWTH_RATE}</b>)?")
-    future_description.append(f"Is the annual growth rate in revenue (<b>{round(dict_['revenue_growth'], 2)}</b>) "
-                              f"expected to exceed the market average in the country of listing "
-                              f"(<b>{US_REVENUE_GROWTH_RATE}</b>)?")
+    future_description.append(f"Is the stocks forward P/E ratio (<b>{round(dict_['forward_pe'], 2)}</b>) expected to "
+                              f"exceed the country forward P/E ratio (<b>{round(dict_['forward_pe_country'])}</b>)")
+    future_description.append(f"Is the stocks forward P/E ratio (<b>{round(dict_['forward_pe'], 2)}</b>) expected to "
+                              f"exceed the sector '{dict_['sector_name']}' forward P/E ratio "
+                              f"(<b>{round(dict_['forward_pe_sector'])}</b>)")
+    future_description.append(f"Is the predicted stocks EPS growth (<b>{round(dict_['eps_g_next_5y'], 2)}"
+                              f"</b>) expected to exceed the predicted country EPS growth in 5 years "
+                              f"(<b>{round(dict_['eps_g_next_5y_country'])}</b>)")
+    future_description.append(f"Is the predicted stocks EPS growth (<b>{round(dict_['eps_g_next_5y'], 2)}</b>) expected"
+                              f" to exceed the sector '{dict_['sector_name']}''s growth"
+                              f" (<b>{round(dict_['eps_g_next_5y_sector'])}</b>)")
     future_description.append(f"Is the annual growth rate in earnings (<b>{round(dict_['net_income_growth'], 2)}</b>) "
                               f"above 20% (0.2)?")
     future_description.append(f"Is the annual growth rate in revenue (<b>{round(dict_['revenue_growth'], 2)}</b>) above "
                               f"20% (0.2)?")
-    future_description.append(f"Is the Return on Equity (ROE) in 3 years expected to be over 20% "
-                              f"(<b>{dict_['rating_ROE']>3}</b>)?")
 
     return future_description
 
@@ -261,6 +252,23 @@ def get_checks(fundamentals):
     coefficients['future'] = dict(zip(get_future_description(fundamentals), get_future_checks(fundamentals)))
 
     return coefficients
+
+
+def get_recommendations(dictionary):
+    """
+    :param dictionary: dictionary to extract recommendations
+    :return: recommendations
+    """
+    dict_ = dict()
+    dict_['Analysts recommendations'] = dictionary['analysts_recommendation']
+    dict_['Overall rating'] = dictionary['analysts_score']
+    dict_['Discounted cash flow rating'] = dictionary['rating_DCF']
+    dict_['Return on equity rating'] = dictionary['rating_ROE']
+    dict_['Return on assets rating'] = dictionary['rating_ROA']
+    dict_['Price/Earnings ratio rating'] = dictionary['rating_PE']
+    dict_['Price/Book ratio rating'] = dictionary['rating_PB']
+
+    return dict_
 
 
 def check_graph_and_get_recommendations(ticker):

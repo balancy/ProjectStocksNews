@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import datetime
+import logging
 import json
 import requests
 import config
@@ -29,7 +30,6 @@ def get_html(url):
         result.raise_for_status()
         return result.text
     except (requests.RequestException, ValueError):
-        print("Network Error")
         return False
 
 

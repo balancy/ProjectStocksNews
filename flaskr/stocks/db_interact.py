@@ -3,8 +3,8 @@ import logging
 from sqlalchemy import exc
 
 from flaskr.db import db_session
-from flaskr.stocks.extract_fundamentals import extract_fundamentals
-from flaskr.stocks.extract_from_finviz import get_finviz_sector_country
+from flaskr.stocks.extract_fundamentals import get_all_stocks_fundamentals
+from flaskr.stocks.extract_from_finviz import get_finviz_sector_and_country
 from flaskr.stocks.model import Fundamentals, CountryFundamentals, SectorFundamentals
 
 
@@ -32,8 +32,10 @@ def create_and_get_country_sector_db_record(type_, dict_):
     """
 
     time_now = datetime.today()
-    data_json = {'name': dict_[type_], 'pe': dict_[f'pe_{type_}'], 'div_yield': dict_[f'div_{type_}'],
-                 'date': time_now}
+    data_json = {'name': dict_[type_], 'date': time_now, 'pe': dict_[f'pe_{type_}'], 'div_yield': dict_[f'div_{type_}'],
+                 'forward_pe': dict_[f'forward_pe_{type_}'], 'eps_g_past_5y': dict_[f'eps_g_past_5y_{type_}'],
+                 'eps_g_next_5y': dict_[f'eps_g_next_5y_{type_}']}
+
     if type_ == "country":
         record_in_db = CountryFundamentals(data_json)
     else:
@@ -59,8 +61,10 @@ def update_and_get_country_sector_db_record(record_in_db, type_, dict_):
     """
 
     time_now = datetime.today()
-    data_json = {'name': dict_[type_], 'pe': dict_[f'pe_{type_}'], 'div_yield': dict_[f'div_{type_}'],
-                 'date': time_now}
+    data_json = {'name': dict_[type_], 'date': time_now, 'pe': dict_[f'pe_{type_}'], 'div_yield': dict_[f'div_{type_}'],
+                 'forward_pe': dict_[f'forward_pe_{type_}'], 'eps_g_past_5y': dict_[f'eps_g_past_5y_{type_}'],
+                 'eps_g_next_5y': dict_[f'eps_g_next_5y_{type_}']}
+
     record_in_db.update(data_json)
     try:
         db_session.commit()
@@ -112,10 +116,10 @@ def create_and_get_stocks_db_record(ticker):
     :return: added DB record
     """
 
-    data_json = extract_fundamentals(ticker)
+    data_json = get_all_stocks_fundamentals(ticker)
     ticker_in_db = Fundamentals(data_json)
 
-    country_sector = get_finviz_sector_country(ticker)
+    country_sector = get_finviz_sector_and_country(ticker)
     ticker_in_db.country = get_actual_country_sector_fundamentals_from_db("country", country_sector)
     ticker_in_db.sector = get_actual_country_sector_fundamentals_from_db("sector", country_sector)
 
@@ -136,10 +140,10 @@ def update_and_get_stocks_db_record(ticker_in_db):
     :return: updated DB record
     """
 
-    data_json = extract_fundamentals(ticker_in_db.ticker)
+    data_json = get_all_stocks_fundamentals(ticker_in_db.ticker)
     ticker_in_db.update(data_json)
 
-    country_sector = get_finviz_sector_country(ticker_in_db.ticker)
+    country_sector = get_finviz_sector_and_country(ticker_in_db.ticker)
     ticker_in_db.country = get_actual_country_sector_fundamentals_from_db("country", country_sector)
     ticker_in_db.sector = get_actual_country_sector_fundamentals_from_db("sector", country_sector)
 

@@ -18,8 +18,8 @@ FINANCIAL_API_KEY = "your financialmodelingprep api key"
 FINANCIAL_BASE_URL = "https://financialmodelingprep.com/api/v3/"
 
 # finviz
-FINVIZ_URL_BASE = "https://finviz.com/quote.ashx?t="
-FINVIZ_URL_GROUP = "https://finviz.com/groups.ashx?g="
+FINVIZ_URL_BASE = "https://finviz.com/quote.ashx"
+FINVIZ_URL_GROUP = "https://finviz.com/groups.ashx"
 FINVIZ_HEADERS = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88'
                   ' Safari/537.36'

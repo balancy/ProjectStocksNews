@@ -1,7 +1,7 @@
 from datetime import datetime
 import requests
 from config import FINANCIAL_API_KEY, FINANCIAL_BASE_URL
-from flaskr.stocks.extract_from_finviz import get_finviz_fundamentals
+from flaskr.stocks.extract_from_finviz import get_finviz_stocks_fundamentals
 
 
 def index_error_handler(list_, index_):
@@ -34,29 +34,36 @@ def value_handler(value):
         return value
 
 
-def add_finviz_fundamentals(dict_to_add, dict_from_finviz) -> None:
+def get_checked_finviz_fundamentals(dict_from_finviz):
     """
-    Adding fundamentals from finviz dict to resulting dictionary.
-    :param dict_to_add: dictionary to add fundamentals from finviz
+    Getting reformatted to correct form fundamentals from finviz.
     :param dict_from_finviz: fundamentals from finviz
+    :return resulting dictionary
     """
 
-    dict_to_add['price'] = float(dict_from_finviz.get('Price'))
-    dict_to_add['sector'] = dict_from_finviz.get('sector')
-    dict_to_add['pe_ratio'] = value_handler(dict_from_finviz.get('P/E'))
-    dict_to_add['peg_ratio'] = value_handler(dict_from_finviz.get('PEG'))
-    dict_to_add['pb_ratio'] = value_handler(dict_from_finviz.get('P/B'))
-    dict_to_add['dividend_yield'] = value_handler(dict_from_finviz.get('Dividend %'))
-    dict_to_add['payout_ratio'] = value_handler(dict_from_finviz.get('Payout')) * 0.01
-    dict_to_add['roe'] = value_handler(dict_from_finviz.get('ROE')) * 0.01
-    dict_to_add['roa'] = value_handler(dict_from_finviz.get('ROA')) * 0.01
+    dict_ = dict()
+    dict_['price'] = float(dict_from_finviz.get('Price'))
+    dict_['sector'] = dict_from_finviz.get('sector')
+    dict_['pe_ratio'] = value_handler(dict_from_finviz.get('P/E'))
+    dict_['peg_ratio'] = value_handler(dict_from_finviz.get('PEG'))
+    dict_['pb_ratio'] = value_handler(dict_from_finviz.get('P/B'))
+    dict_['dividend_yield'] = value_handler(dict_from_finviz.get('Dividend %'))
+    dict_['payout_ratio'] = value_handler(dict_from_finviz.get('Payout')) * 0.01
+    dict_['roe'] = value_handler(dict_from_finviz.get('ROE')) * 0.01
+    dict_['roa'] = value_handler(dict_from_finviz.get('ROA')) * 0.01
+    dict_['forward_pe'] = value_handler(dict_from_finviz.get('Forward P/E'))
+    dict_['eps_g_next_5y'] = value_handler(dict_from_finviz.get('EPS next 5Y'))
+    dict_['eps_g_past_5y'] = value_handler(dict_from_finviz.get('EPS past 5Y'))
+    dict_['eps_g_now'] = value_handler(dict_from_finviz.get('EPS this Y'))
+
+    return dict_
 
 
-def add_financial_ratios(dict_to_add, ticker) -> None:
+def get_financial_ratios(ticker):
     """
-    Adding financial ratios to the dict.
-    :param dict_to_add: dictionary to add info
+    Getting financial ratios.
     :param ticker: ticker we are working with
+    :return resulting dictionary
     """
 
     financial_ratios_url = FINANCIAL_BASE_URL + f"ratios/{ticker}?apikey={FINANCIAL_API_KEY}&limit=10"
@@ -65,106 +72,101 @@ def add_financial_ratios(dict_to_add, ticker) -> None:
     financial_ratios_json_3ya = index_error_handler(financial_ratios_json, 3)
     financial_ratios_json_5ya = index_error_handler(financial_ratios_json, 5)
 
-    dict_to_add['debt_equity_ratio_now'] = float(financial_ratios_json_now.get('debtEquityRatio', 0))
-    dict_to_add['debt_equity_ratio_5ya'] = float(financial_ratios_json_5ya.get('debtEquityRatio', 0))
-    dict_to_add['interest_coverage'] = float(financial_ratios_json_now.get('interestCoverage', 0))
-    dict_to_add['roce_now'] = float(financial_ratios_json_now.get('returnOnCapitalEmployed', 0))
-    dict_to_add['roce_3ya'] = float(financial_ratios_json_3ya.get('returnOnCapitalEmployed', 0))
+    dict_ = dict()
+    dict_['debt_equity_ratio_now'] = float(financial_ratios_json_now.get('debtEquityRatio', 0))
+    dict_['debt_equity_ratio_5ya'] = float(financial_ratios_json_5ya.get('debtEquityRatio', 0))
+    dict_['interest_coverage'] = float(financial_ratios_json_now.get('interestCoverage', 0))
+    dict_['roce_now'] = float(financial_ratios_json_now.get('returnOnCapitalEmployed', 0))
+    dict_['roce_3ya'] = float(financial_ratios_json_3ya.get('returnOnCapitalEmployed', 0))
+
+    return dict_
 
 
-def add_financial_growth_data(dict_to_add, ticker) -> None:
+def get_financial_growth_data(ticker):
     """
-    Adding financial growth data to the dict.
-    :param dict_to_add: dictionary to add info
+    Getting financial growth data.
     :param ticker: ticker we are working with
+    :return resulting dictionary
     """
 
     financial_growth_url = FINANCIAL_BASE_URL + f"financial-growth/{ticker}?apikey={FINANCIAL_API_KEY}&limit=10"
     financial_growth_json = requests.get(financial_growth_url).json()
     financial_growth_json_now = financial_growth_json[0]
-    financial_growth_json_5ya = index_error_handler(financial_growth_json, 5)
 
-    dict_to_add['debt_growth'] = float(financial_growth_json_now.get('debtGrowth', 0))
-    dict_to_add['dps_growth'] = float(financial_growth_json_now.get('dividendsperShareGrowth', 0))
-    dict_to_add['ten_years_dps_growth'] = float(financial_growth_json_now.get('tenYDividendperShareGrowthPerShare', 0))
-    dict_to_add['net_income_growth'] = float(financial_growth_json_now.get('netIncomeGrowth', 0))
-    dict_to_add['revenue_growth'] = float(financial_growth_json_now.get('revenueGrowth', 0))
-    dict_to_add['growth_eps_now'] = float(financial_growth_json_now.get('epsgrowth', 0))
-    dict_to_add['growth_eps_5ya'] = float(financial_growth_json_5ya.get('epsgrowth', 0))
+    dict_ = dict()
+    dict_['debt_growth'] = float(financial_growth_json_now.get('debtGrowth', 0))
+    dict_['dps_growth'] = float(financial_growth_json_now.get('dividendsperShareGrowth', 0))
+    dict_['ten_years_dps_growth'] = float(financial_growth_json_now.get('tenYDividendperShareGrowthPerShare', 0))
+    dict_['net_income_growth'] = float(financial_growth_json_now.get('netIncomeGrowth', 0))
+    dict_['revenue_growth'] = float(financial_growth_json_now.get('revenueGrowth', 0))
+
+    return dict_
 
 
-def add_income_stmt_data(dict_to_add, ticker):
+def get_historical_rating(ticker):
     """
-    Adding income statement data to the dict.
-    :param dict_to_add: dictionary to add info
+    Getting historical rating.
     :param ticker: ticker we are working with
-    """
-
-    income_statement_url = FINANCIAL_BASE_URL + f"income-statement/{ticker}?apikey={FINANCIAL_API_KEY}&limit=10"
-    income_statement_json = requests.get(income_statement_url).json()
-    income_statement_json_now = income_statement_json[0]
-    income_statement_json_5ya = index_error_handler(income_statement_json, 5)
-
-    dict_to_add['eps_now'] = float(income_statement_json_now.get('eps', 0))
-    dict_to_add['eps_5ya'] = float(income_statement_json_5ya.get('eps', 0))
-
-
-def add_historical_rating(dict_to_add, ticker):
-    """
-    Adding historical rating to the dict.
-    :param dict_to_add: dictionary to add info
-    :param ticker: ticker we are working with
+    :return resulting dictionary
     """
 
     historical_rating_url = FINANCIAL_BASE_URL + f"historical-rating/{ticker}?apikey={FINANCIAL_API_KEY}"
     historical_rating_json = requests.get(historical_rating_url).json()[0]
 
-    dict_to_add['analysts_rating'] = historical_rating_json['rating']
-    dict_to_add['analysts_score'] = historical_rating_json.get('ratingScore', 0)
-    dict_to_add['analysts_recommendation'] = historical_rating_json['ratingRecommendation']
-    dict_to_add['rating_DCF'] = historical_rating_json.get('ratingDetailsDCFScore', 0)
-    dict_to_add['rating_ROE'] = historical_rating_json.get('ratingDetailsROEScore', 0)
-    dict_to_add['rating_ROA'] = historical_rating_json.get('ratingDetailsROAScore', 0)
-    dict_to_add['rating_DE'] = historical_rating_json.get('ratingDetailsDEScore', 0)
-    dict_to_add['rating_PE'] = historical_rating_json.get('ratingDetailsPEScore', 0)
-    dict_to_add['rating_PB'] = historical_rating_json.get('ratingDetailsPBScore', 0)
+    dict_ = dict()
+    dict_['analysts_rating'] = historical_rating_json['rating']
+    dict_['analysts_score'] = historical_rating_json.get('ratingScore', 0)
+    dict_['analysts_recommendation'] = historical_rating_json['ratingRecommendation']
+    dict_['rating_DCF'] = historical_rating_json.get('ratingDetailsDCFScore', 0)
+    dict_['rating_ROE'] = historical_rating_json.get('ratingDetailsROEScore', 0)
+    dict_['rating_ROA'] = historical_rating_json.get('ratingDetailsROAScore', 0)
+    dict_['rating_DE'] = historical_rating_json.get('ratingDetailsDEScore', 0)
+    dict_['rating_PE'] = historical_rating_json.get('ratingDetailsPEScore', 0)
+    dict_['rating_PB'] = historical_rating_json.get('ratingDetailsPBScore', 0)
+
+    return dict_
 
 
-def add_profile_data(dict_to_add, ticker):
+def get_profile_data(ticker):
     """
-    Adding profile data to the dict.
-    :param dict_to_add: dictionary to add info
+    Getting profile data.
     :param ticker: ticker we are working with
+    :return resulting dictionary
     """
 
     profile_url = FINANCIAL_BASE_URL + f"profile/{ticker}?apikey={FINANCIAL_API_KEY}"
     profile_json = requests.get(profile_url).json()[0]
 
-    dict_to_add['dcf'] = float(profile_json.get('dcf', 0))
+    dict_ = dict()
+    dict_['dcf'] = float(profile_json.get('dcf', 0))
+    return dict_
 
 
-def add_balance_sheet_data(dict_to_add, ticker):
+def get_balance_sheet_data(ticker):
     """
-    Adding balance sheet data to the dict.
-    :param dict_to_add: dictionary to add info
+    Getting balance sheet data.
     :param ticker: ticker we are working with
+    :return resulting dictionary
     """
 
     balance_sheet_url = FINANCIAL_BASE_URL + f"balance-sheet-statement/{ticker}?apikey={FINANCIAL_API_KEY}"
     balance_sheet_json = requests.get(balance_sheet_url).json()[0]
 
-    dict_to_add['short_term_liabilities'] = balance_sheet_json.get('totalCurrentLiabilities', 0)
-    dict_to_add['long_term_liabilities'] = balance_sheet_json.get('totalLiabilities', 0)
-    dict_to_add['short_term_assets'] = balance_sheet_json.get('totalCurrentAssets', 0)
-    dict_to_add['long_term_assets'] = balance_sheet_json.get('totalAssets', 0)
-    dict_to_add['total_debt'] = balance_sheet_json.get('totalDebt', 0)
+    dict_ = dict()
+    dict_['short_term_liabilities'] = balance_sheet_json.get('totalCurrentLiabilities', 0)
+    dict_['long_term_liabilities'] = balance_sheet_json.get('totalLiabilities', 0)
+    dict_['short_term_assets'] = balance_sheet_json.get('totalCurrentAssets', 0)
+    dict_['long_term_assets'] = balance_sheet_json.get('totalAssets', 0)
+    dict_['total_debt'] = balance_sheet_json.get('totalDebt', 0)
+
+    return dict_
 
 
-def add_cash_flow_data(dict_to_add, ticker):
+def get_cash_flow_data(ticker):
     """
-    Adding cash flow data to the dict.
-    :param dict_to_add: dictionary to add info
+    Getting cash flow data.
     :param ticker: ticker we are working with
+    :return resulting dictionary
     """
 
     cash_flow_url = FINANCIAL_BASE_URL + f"cash-flow-statement/{ticker}?apikey={FINANCIAL_API_KEY}&limit=10"
@@ -172,14 +174,17 @@ def add_cash_flow_data(dict_to_add, ticker):
     cash_flow_json_now = cash_flow_json[0]
     cash_flow_json_10ya = index_error_handler(cash_flow_json, 9)
 
-    dict_to_add['operating_cash_flow'] = cash_flow_json_now.get('operatingCashFlow', 0)
-    dict_to_add['dividends_paid_now'] = float(-cash_flow_json_now.get('dividendsPaid', 0))
-    dict_to_add['dividends_paid_10ya'] = float(-cash_flow_json_10ya.get('dividendsPaid', 0))
+    dict_ = dict()
+    dict_['operating_cash_flow'] = cash_flow_json_now.get('operatingCashFlow', 0)
+    dict_['dividends_paid_now'] = float(-cash_flow_json_now.get('dividendsPaid', 0))
+    dict_['dividends_paid_10ya'] = float(-cash_flow_json_10ya.get('dividendsPaid', 0))
+
+    return dict_
 
 
-def extract_fundamentals(ticker):
+def get_all_stocks_fundamentals(ticker):
     """
-    Extracting fundamentals by Ticker from API and finviz site.
+    Extracting stocks fundamentals by its ticker from API and finviz site.
     :param ticker: ticker which fundamentals we are searching for
     :return: fundamentals in the form of dictionary
     """
@@ -187,37 +192,35 @@ def extract_fundamentals(ticker):
     fundamentals = dict()
     fundamentals['ticker'] = ticker
 
-    # adding fundamentals to returning dictionary
-    finviz_fundamentals = get_finviz_fundamentals(ticker)
-    add_finviz_fundamentals(fundamentals, finviz_fundamentals)
-    add_financial_ratios(fundamentals, ticker)
-    add_financial_growth_data(fundamentals, ticker)
-    add_income_stmt_data(fundamentals, ticker)
-    add_historical_rating(fundamentals, ticker)
-    add_profile_data(fundamentals, ticker)
-    add_balance_sheet_data(fundamentals, ticker)
-    add_cash_flow_data(fundamentals, ticker)
+    finviz_fundamentals = get_finviz_stocks_fundamentals(ticker)
+    fundamentals.update(get_checked_finviz_fundamentals(finviz_fundamentals))
+    fundamentals.update(get_financial_ratios(ticker))
+    fundamentals.update(get_financial_growth_data(ticker))
+    fundamentals.update(get_historical_rating(ticker))
+    fundamentals.update(get_profile_data(ticker))
+    fundamentals.update(get_balance_sheet_data(ticker))
+    fundamentals.update(get_cash_flow_data(ticker))
 
     fundamentals['date'] = datetime.today()
     fundamentals['dividend_volatile'] = 0
 
     return fundamentals
-
-
-def get_recommendations(dictionary):
-    """
-    Getting analytics recommendations from fundamentals dictionary.
-    :param dictionary: dictionary in which we are searching for recommendations
-    :return: recommendations in the form of dictionary
-    """
-
-    dict_recommendations = dict()
-    dict_recommendations['Analysts recommendations'] = dictionary['analysts_recommendation']
-    dict_recommendations['Overall rating'] = dictionary['analysts_score']
-    dict_recommendations['Discounted cash flow rating'] = dictionary['rating_DCF']
-    dict_recommendations['Return on equity rating'] = dictionary['rating_ROE']
-    dict_recommendations['Return on assets rating'] = dictionary['rating_ROA']
-    dict_recommendations['Price/Earnings ratio rating'] = dictionary['rating_PE']
-    dict_recommendations['Price/Book ratio rating'] = dictionary['rating_PB']
-
-    return dict_recommendations
+#
+#
+# def get_recommendations(dictionary):
+#     """
+#     Getting analytics recommendations from fundamentals dictionary.
+#     :param dictionary: dictionary in which we are searching for recommendations
+#     :return: recommendations in the form of dictionary
+#     """
+#
+#     dict_ = dict()
+#     dict_['Analysts recommendations'] = dictionary['analysts_recommendation']
+#     dict_['Overall rating'] = dictionary['analysts_score']
+#     dict_['Discounted cash flow rating'] = dictionary['rating_DCF']
+#     dict_['Return on equity rating'] = dictionary['rating_ROE']
+#     dict_['Return on assets rating'] = dictionary['rating_ROA']
+#     dict_['Price/Earnings ratio rating'] = dictionary['rating_PE']
+#     dict_['Price/Book ratio rating'] = dictionary['rating_PB']
+#
+#     return dict_

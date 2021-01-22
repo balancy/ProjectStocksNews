@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, send_from_directory
+import logging
 from flaskr.news.parse import get_tickers
 from flaskr.stocks.calculate_checks import check_graph_and_get_recommendations
 
@@ -14,8 +15,15 @@ def ticker_fundamentals(ticker):
     """
     try:
         checks, recommendations = check_graph_and_get_recommendations(ticker.upper())
-    except NameError:
-        return render_template('404.html', ticker=True)
+    except TimeoutError:
+        logging.info(f"Timeout error during parsing {ticker} info from Finviz.")
+        return render_template('error.html', parameter="timeout")
+    except ConnectionError:
+        logging.info(f"Connection error during parsing {ticker} info from Finviz.")
+        return render_template('error.html', parameter="connection")
+    except IndexError:
+        logging.info(f"There is no such ticker {ticker} found on Finviz.")
+        return render_template('error.html', parameter="ticker")
 
     return render_template('ticker.html', pagetitle=f"Ticker {ticker}", ticker=ticker, checks=checks,
                            recommendations=recommendations)

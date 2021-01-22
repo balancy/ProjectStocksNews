@@ -23,30 +23,26 @@ def get_dict_from_df(df):
     return dict_finviz
 
 
-def get_finviz_info(ticker):
+def get_finviz_table(ticker):
     """
     Getting the header of the finviz site.
     :param ticker: stocks ticker to search for on the site.
     :return: site header dataframe
     """
-
-    request = requests.get(f"{FINVIZ_URL_BASE}{ticker}", headers=FINVIZ_HEADERS)
-    if request.status_code == 404:
-        raise NameError
-
+    request = requests.get(f"{FINVIZ_URL_BASE}", headers=FINVIZ_HEADERS, params={"t": ticker})
     df = pd.read_html(request.text)
 
     return df
 
 
-def get_finviz_fundamentals(ticker):
+def get_finviz_stocks_fundamentals(ticker):
     """
     Getting fundamentals from finviz site.
     :param ticker: ticker to search for on the site
     :return: fundamentals in the form of dictionary
     """
 
-    df = get_finviz_info(ticker)
+    df = get_finviz_table(ticker)
 
     # main fundamentals table from site
     finviz_fundamentals = df[5]
@@ -57,54 +53,70 @@ def get_finviz_fundamentals(ticker):
     return dict_finviz
 
 
-def get_pe_and_dividend(division_type, division_value):
+def get_division_fundamentals_from_overview_page(division_type, division_value):
     """
-    Getting P/E and Dividend for demanded type
+    Getting P/E, Forward P/E and Dividend for demanded type
     :param division_type: 'sector' or 'country'
     :param division_value: sector or country
-    :return: demanded P/E and Dividend yield
+    :return: demanded P/E, forward P/E and Dividend yield
     """
 
-    link = f"{FINVIZ_URL_GROUP}{division_type}&v=110"
-    request = requests.get(link, headers=FINVIZ_HEADERS)
-
+    request = requests.get(FINVIZ_URL_GROUP, headers=FINVIZ_HEADERS, params={'v': 110, 'g': division_type})
     df = pd.read_html(request.text)[4]
 
     idx_value = df.index[df[1] == division_value][0]
     pe = df[5][idx_value]
+    fw_pe = df[6][idx_value]
     div = df[4][idx_value][:-1]
-    return float(pe), float(div)
+    return float(pe), float(fw_pe), float(div)
 
 
-def get_sector_country_pe_div(sector, country):
+def get_division_fundamentals_from_valuation_page(division_type, division_value):
     """
-    Getting P/E et Dividend yield for sector and country.
+    Getting EPS_last_5Y, EPS_next_5Y for demanded type
+    :param division_type: 'sector' or 'country'
+    :param division_value: sector or country
+    :return: demanded eps_next_5y, eps_last_5y
+    """
+
+    request = requests.get(FINVIZ_URL_GROUP, headers=FINVIZ_HEADERS, params={'v': 120, 'g': division_type})
+    df = pd.read_html(request.text)[4]
+
+    idx_value = df.index[df[1] == division_value][0]
+    eps_past_5y = df[9][idx_value][:-1]
+    eps_next_5y = df[10][idx_value][:-1]
+    return float(eps_past_5y), float(eps_next_5y)
+
+
+def get_sector_country_fundamentals(sector, country):
+    """
+    Getting fundamentals for country and sector
     :param sector: stocks sector
     :param country: stocks country
-    :return: dictionary with P/E and Div yield of country and sector
+    :return: dictionary with fundamentals of country and sector
     """
 
-    # fundamentals of the sector and country
-    pe_sector, div_sector = get_pe_and_dividend('sector', sector)
-    pe_country, div_country = get_pe_and_dividend('country', country)
-
     dictionary = dict()
-    dictionary['pe_sector'] = pe_sector
-    dictionary['pe_country'] = pe_country
-    dictionary['div_sector'] = div_sector
-    dictionary['div_country'] = div_country
+    dictionary['pe_sector'], dictionary['forward_pe_sector'], dictionary['div_sector'] = \
+        get_division_fundamentals_from_overview_page('sector', sector)
+    dictionary['pe_country'], dictionary['forward_pe_country'], dictionary['div_country'] = \
+        get_division_fundamentals_from_overview_page('country', country)
+    dictionary['eps_g_past_5y_sector'], dictionary['eps_g_next_5y_sector'] = \
+        get_division_fundamentals_from_valuation_page('sector', sector)
+    dictionary['eps_g_past_5y_country'], dictionary['eps_g_next_5y_country'] = \
+        get_division_fundamentals_from_valuation_page('country', country)
 
     return dictionary
 
 
-def get_finviz_sector_country(ticker):
+def get_finviz_sector_and_country(ticker):
     """
-    Getting country and sector of demanded stock.
+    Getting the country and the sector of the demanded stock.
     :param ticker: ticker which sector and country we are searching for
     :return: dictionary with sector name, country name and their fundamentals
     """
 
-    df = get_finviz_info(ticker)
+    df = get_finviz_table(ticker)
 
     # useful info (line like 'Technology | Consumer Electronics | USA' for Apple, from which we can extract its sector
     # and country)
@@ -112,8 +124,8 @@ def get_finviz_sector_country(ticker):
     sector = useful_info[0].strip()
     country = useful_info[2].strip()
 
-    sector_country = get_sector_country_pe_div(sector, country)
-    sector_country['sector'] = sector
-    sector_country['country'] = country
+    sector_country_fundamentals = get_sector_country_fundamentals(sector, country)
+    sector_country_fundamentals['sector'] = sector
+    sector_country_fundamentals['country'] = country
 
-    return sector_country
+    return sector_country_fundamentals

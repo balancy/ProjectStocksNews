@@ -10,3 +10,4 @@ flaskr/stocks/utils/hist_graph.old.py
 flaskr.db
 flaskr.log
 just_for_test
+reading_bot.log
