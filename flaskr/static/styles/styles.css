@@ -149,5 +149,6 @@ div.rectangles{
 }
 
 .p-recommendations{
-    margin: 12px auto 12px 36px;
+    margin: 12px 36px;
+    text-align: justify;
 }

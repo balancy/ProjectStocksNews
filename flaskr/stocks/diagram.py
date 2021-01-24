@@ -7,6 +7,8 @@ import pathlib
 from config import DIAGRAM_FILENAME, DIAGRAM_FILEPATH
 matplotlib.use('Agg')
 
+logger = logging.getLogger(__name__)
+
 
 class Diagram:
     """
@@ -89,5 +91,5 @@ class Diagram:
 
         # Saving picture
         plt.savefig(fname)
-        logging.info(f"Graph {fname} created.")
+        logger.info(f"Graph {fname} created.")
         plt.clf()

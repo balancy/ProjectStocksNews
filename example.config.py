@@ -35,3 +35,6 @@ DIAGRAM_FILENAME = "_diagram_perspective.png"
 # chart
 CHART_FILEPATH = "flaskr/charts/"
 CHART_FILENAME = "_chart.png"
+
+# host
+HOST_NAME = "your host name"

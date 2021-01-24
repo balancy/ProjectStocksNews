@@ -9,6 +9,10 @@ class News(Base):
 
     __tablename__ = "news"
 
+    __mapper_args__ = {
+        'confirm_deleted_rows': False
+    }
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
     url = Column(String, nullable=False)

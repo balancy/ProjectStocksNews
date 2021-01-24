@@ -1,0 +1,17 @@
+apscheduler
+beautifulsoup4
+csv
+flask
+json
+matplotlib
+pandas
+pandas_datareader
+pandas_market_calendars
+pathlib
+plotly
+pytz
+re
+requests
+sqlalchemy
+telegram
+telegram.ext

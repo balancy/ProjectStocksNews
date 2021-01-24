@@ -2,6 +2,14 @@
 
 {% block content %}
 <div>
-    <img class="diagram" src="static/images/404{% if parameter=='ticker' %}_ticker{% elif parameter=='timeout'%}_timeout{% elif parameter=='connection' %}_connection{% endif %}.png" alt="404">
+    {% if parameter=='ticker' %}
+        <img class="diagram" src="/static/images/404_ticker.png" alt="404">
+    {% elif parameter=='timeout' %}
+        <img class="diagram" src="/static/images/404_timeout.png" alt="404">
+    {% elif parameter=='connection' %}
+        <img class="diagram" src="/static/images/404_connection.png" alt="404">
+    {% else %}
+        <img class="diagram" src="/static/images/404.png" alt="404">
+    {% endif %}
 </div>
 {% endblock %}

@@ -13,6 +13,7 @@ class Fundamentals(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     ticker = Column(String(10), nullable=False)
     price = Column(Float, nullable=False)
+    description = Column(String)
     sector_id = Column(Integer, ForeignKey('sector_fundamentals.id'))
     country_id = Column(Integer, ForeignKey('country_fundamentals.id'))
 

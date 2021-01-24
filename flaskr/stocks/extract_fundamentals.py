@@ -19,6 +19,20 @@ def index_error_handler(list_, index_):
     return list_element
 
 
+def none_handler(value):
+    """
+    If encounters None value, replace it by zero
+    :param value: value from API
+    :return: value or zero if None
+    """
+
+    try:
+        value = float(value)
+    except TypeError:
+        value = 0
+    return value
+
+
 def value_handler(value):
     """
     If encounters '-', returns 0.
@@ -73,11 +87,11 @@ def get_financial_ratios(ticker):
     financial_ratios_json_5ya = index_error_handler(financial_ratios_json, 5)
 
     dict_ = dict()
-    dict_['debt_equity_ratio_now'] = float(financial_ratios_json_now.get('debtEquityRatio', 0))
-    dict_['debt_equity_ratio_5ya'] = float(financial_ratios_json_5ya.get('debtEquityRatio', 0))
-    dict_['interest_coverage'] = float(financial_ratios_json_now.get('interestCoverage', 0))
-    dict_['roce_now'] = float(financial_ratios_json_now.get('returnOnCapitalEmployed', 0))
-    dict_['roce_3ya'] = float(financial_ratios_json_3ya.get('returnOnCapitalEmployed', 0))
+    dict_['debt_equity_ratio_now'] = none_handler(financial_ratios_json_now.get('debtEquityRatio', 0))
+    dict_['debt_equity_ratio_5ya'] = none_handler(financial_ratios_json_5ya.get('debtEquityRatio', 0))
+    dict_['interest_coverage'] = none_handler(financial_ratios_json_now.get('interestCoverage', 0))
+    dict_['roce_now'] = none_handler(financial_ratios_json_now.get('returnOnCapitalEmployed', 0))
+    dict_['roce_3ya'] = none_handler(financial_ratios_json_3ya.get('returnOnCapitalEmployed', 0))
 
     return dict_
 
@@ -94,11 +108,11 @@ def get_financial_growth_data(ticker):
     financial_growth_json_now = financial_growth_json[0]
 
     dict_ = dict()
-    dict_['debt_growth'] = float(financial_growth_json_now.get('debtGrowth', 0))
-    dict_['dps_growth'] = float(financial_growth_json_now.get('dividendsperShareGrowth', 0))
-    dict_['ten_years_dps_growth'] = float(financial_growth_json_now.get('tenYDividendperShareGrowthPerShare', 0))
-    dict_['net_income_growth'] = float(financial_growth_json_now.get('netIncomeGrowth', 0))
-    dict_['revenue_growth'] = float(financial_growth_json_now.get('revenueGrowth', 0))
+    dict_['debt_growth'] = none_handler(financial_growth_json_now.get('debtGrowth', 0))
+    dict_['dps_growth'] = none_handler(financial_growth_json_now.get('dividendsperShareGrowth', 0))
+    dict_['ten_years_dps_growth'] = none_handler(financial_growth_json_now.get('tenYDividendperShareGrowthPerShare', 0))
+    dict_['net_income_growth'] = none_handler(financial_growth_json_now.get('netIncomeGrowth', 0))
+    dict_['revenue_growth'] = none_handler(financial_growth_json_now.get('revenueGrowth', 0))
 
     return dict_
 
@@ -138,7 +152,8 @@ def get_profile_data(ticker):
     profile_json = requests.get(profile_url).json()[0]
 
     dict_ = dict()
-    dict_['dcf'] = float(profile_json.get('dcf', 0))
+    dict_['dcf'] = none_handler(profile_json.get('dcf', 0))
+    dict_['description'] = profile_json.get('description')
     return dict_
 
 
@@ -176,8 +191,8 @@ def get_cash_flow_data(ticker):
 
     dict_ = dict()
     dict_['operating_cash_flow'] = cash_flow_json_now.get('operatingCashFlow', 0)
-    dict_['dividends_paid_now'] = float(-cash_flow_json_now.get('dividendsPaid', 0))
-    dict_['dividends_paid_10ya'] = float(-cash_flow_json_10ya.get('dividendsPaid', 0))
+    dict_['dividends_paid_now'] = none_handler(-cash_flow_json_now.get('dividendsPaid', 0))
+    dict_['dividends_paid_10ya'] = none_handler(-cash_flow_json_10ya.get('dividendsPaid', 0))
 
     return dict_
 
@@ -205,22 +220,4 @@ def get_all_stocks_fundamentals(ticker):
     fundamentals['dividend_volatile'] = 0
 
     return fundamentals
-#
-#
-# def get_recommendations(dictionary):
-#     """
-#     Getting analytics recommendations from fundamentals dictionary.
-#     :param dictionary: dictionary in which we are searching for recommendations
-#     :return: recommendations in the form of dictionary
-#     """
-#
-#     dict_ = dict()
-#     dict_['Analysts recommendations'] = dictionary['analysts_recommendation']
-#     dict_['Overall rating'] = dictionary['analysts_score']
-#     dict_['Discounted cash flow rating'] = dictionary['rating_DCF']
-#     dict_['Return on equity rating'] = dictionary['rating_ROE']
-#     dict_['Return on assets rating'] = dictionary['rating_ROA']
-#     dict_['Price/Earnings ratio rating'] = dictionary['rating_PE']
-#     dict_['Price/Book ratio rating'] = dictionary['rating_PB']
-#
-#     return dict_
+

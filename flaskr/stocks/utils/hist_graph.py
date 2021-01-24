@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from pandas_datareader import data as web
+from pandas_datareader._utils import RemoteDataError
 import pathlib
 import plotly.graph_objects as go
 from config import CHART_FILEPATH, CHART_FILENAME
@@ -44,7 +45,10 @@ def create_graph(ticker):
 
     graph_name = f"{CHART_FILEPATH}{ticker}{CHART_FILENAME}"
     if not exists(graph_name):
-        df = get_stocks_df(ticker)
+        try:
+            df = get_stocks_df(ticker)
+        except RemoteDataError:
+            return False
         trace1 = {'x': df.index, 'open': df.Open, 'close': df.Close, 'high': df.High, 'low': df.Low,
                   'type': 'candlestick', 'name': f'{ticker}]'}
 

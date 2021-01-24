@@ -1,6 +1,10 @@
+import logging
 import pandas as pd
 import requests
 from config import FINVIZ_URL_BASE, FINVIZ_URL_GROUP, FINVIZ_HEADERS
+from flaskr.errors.exceptions import StockNotFoundException
+
+logger = logging.getLogger(__name__)
 
 
 def get_dict_from_df(df):
@@ -29,8 +33,16 @@ def get_finviz_table(ticker):
     :param ticker: stocks ticker to search for on the site.
     :return: site header dataframe
     """
-    request = requests.get(f"{FINVIZ_URL_BASE}", headers=FINVIZ_HEADERS, params={"t": ticker})
-    df = pd.read_html(request.text)
+
+    try:
+        request = requests.get(f"{FINVIZ_URL_BASE}", headers=FINVIZ_HEADERS, params={"t": ticker})
+        df = pd.read_html(request.text)
+    except TimeoutError:
+        logger.error(f"Timeout error during parsing {ticker} info from Finviz.")
+        raise StockNotFoundException(ticker)
+    except ConnectionError:
+        logger.error(f"Connection error during parsing {ticker} info from Finviz.")
+        raise StockNotFoundException(ticker)
 
     return df
 
@@ -45,7 +57,11 @@ def get_finviz_stocks_fundamentals(ticker):
     df = get_finviz_table(ticker)
 
     # main fundamentals table from site
-    finviz_fundamentals = df[5]
+    try:
+        finviz_fundamentals = df[5]
+    except IndexError:
+        logger.error(f"Index error during parsing {ticker} info from Finviz.")
+        raise StockNotFoundException(ticker)
 
     # transforming dataframe to dictionary
     dict_finviz = get_dict_from_df(finviz_fundamentals)
@@ -109,17 +125,15 @@ def get_sector_country_fundamentals(sector, country):
     return dictionary
 
 
-def get_finviz_sector_and_country(ticker):
+def get_finviz_fundamentals_of_sector_country(ticker):
     """
-    Getting the country and the sector of the demanded stock.
-    :param ticker: ticker which sector and country we are searching for
-    :return: dictionary with sector name, country name and their fundamentals
+    Getting all fundamentals including sector and country for the demanded stock.
+    :param ticker: stocks ticker
+    :return: dictionary with all fundamentals
     """
 
     df = get_finviz_table(ticker)
 
-    # useful info (line like 'Technology | Consumer Electronics | USA' for Apple, from which we can extract its sector
-    # and country)
     useful_info = df[4][0][2].split('|')
     sector = useful_info[0].strip()
     country = useful_info[2].strip()

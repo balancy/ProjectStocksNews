@@ -1,12 +1,13 @@
 .vscode/
 .idea/
 __pycache__/
-env/
 config.py
+env/
 flaskr/charts/*
 flaskr/diagrams/*
 flaskr/static/data/ListingSecurityList.csv
 flaskr/stocks/utils/hist_graph.old.py
+flaskr/utils
 flaskr.db
 flaskr.log
 just_for_test

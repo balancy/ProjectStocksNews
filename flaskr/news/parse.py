@@ -5,6 +5,8 @@ import json
 import requests
 import config
 
+logger = logging.getLogger(__name__)
+
 
 def get_tickers():
     """
@@ -30,6 +32,7 @@ def get_html(url):
         result.raise_for_status()
         return result.text
     except (requests.RequestException, ValueError):
+        logger.error("Failed to get rss html from Marketwatch.")
         return False
 
 
@@ -85,5 +88,5 @@ def get_news():
                 list_news.append(record_one_news)
 
         except AttributeError:
-            pass
+            logger.error("Failed to read attributes of news from Marketwatch site.")
     return list_news

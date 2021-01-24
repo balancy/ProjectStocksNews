@@ -4,8 +4,10 @@ from sqlalchemy import exc
 
 from flaskr.db import db_session
 from flaskr.stocks.extract_fundamentals import get_all_stocks_fundamentals
-from flaskr.stocks.extract_from_finviz import get_finviz_sector_and_country
+from flaskr.stocks.extract_from_finviz import get_finviz_fundamentals_of_sector_country
 from flaskr.stocks.model import Fundamentals, CountryFundamentals, SectorFundamentals
+
+logger = logging.getLogger(__name__)
 
 
 def get_country_sector_from_db(type_, name):
@@ -44,10 +46,10 @@ def create_and_get_country_sector_db_record(type_, dict_):
     db_session.add(record_in_db)
     try:
         db_session.commit()
-        logging.info(f"{type_} {record_in_db.name} was added to DB.")
+        logger.info(f"{type_} {record_in_db.name} was added to DB.")
         return record_in_db
     except exc.SQLAlchemyError:
-        logging.info(f"Failed to add {type} fundamentals to DB.")
+        logger.error(f"Failed to add {type} fundamentals to DB.")
         return False
 
 
@@ -68,10 +70,10 @@ def update_and_get_country_sector_db_record(record_in_db, type_, dict_):
     record_in_db.update(data_json)
     try:
         db_session.commit()
-        logging.info(f"{type_} {record_in_db.name} was updated in DB.")
+        logger.info(f"{type_} {record_in_db.name} was updated in DB.")
         return record_in_db
     except exc.SQLAlchemyError:
-        logging.info(f"Failed to update {type} fundamentals in DB.")
+        logger.error(f"Failed to update {type} fundamentals in DB.")
         return False
 
 
@@ -119,17 +121,17 @@ def create_and_get_stocks_db_record(ticker):
     data_json = get_all_stocks_fundamentals(ticker)
     ticker_in_db = Fundamentals(data_json)
 
-    country_sector = get_finviz_sector_and_country(ticker)
+    country_sector = get_finviz_fundamentals_of_sector_country(ticker)
     ticker_in_db.country = get_actual_country_sector_fundamentals_from_db("country", country_sector)
     ticker_in_db.sector = get_actual_country_sector_fundamentals_from_db("sector", country_sector)
 
     db_session.add(ticker_in_db)
     try:
         db_session.commit()
-        logging.info(f"Stocks ticker {ticker} was added to DB.")
+        logger.info(f"Stocks ticker {ticker} was added to DB.")
         return ticker_in_db
     except exc.SQLAlchemyError:
-        logging.info(f"Failed to add {ticker} fundamentals to DB.")
+        logger.error(f"Failed to add {ticker} fundamentals to DB.")
         return False
 
 
@@ -143,16 +145,16 @@ def update_and_get_stocks_db_record(ticker_in_db):
     data_json = get_all_stocks_fundamentals(ticker_in_db.ticker)
     ticker_in_db.update(data_json)
 
-    country_sector = get_finviz_sector_and_country(ticker_in_db.ticker)
+    country_sector = get_finviz_fundamentals_of_sector_country(ticker_in_db.ticker)
     ticker_in_db.country = get_actual_country_sector_fundamentals_from_db("country", country_sector)
     ticker_in_db.sector = get_actual_country_sector_fundamentals_from_db("sector", country_sector)
 
     try:
         db_session.commit()
-        logging.info(f"Stocks ticker {ticker_in_db.ticker} was updated in DB.")
+        logger.info(f"Stocks ticker {ticker_in_db.ticker} was updated in DB.")
         return ticker_in_db
     except exc.SQLAlchemyError:
-        logging.info(f"Failed to update {ticker_in_db.ticker} fundamentals in DB.")
+        logger.error(f"Failed to update {ticker_in_db.ticker} fundamentals in DB.")
         return False
 
 

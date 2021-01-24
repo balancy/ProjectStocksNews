@@ -2,6 +2,12 @@
 
 {% block content %}
 <div class="row-tickers">
+    <h4 class="h4-tickers">Description</h4>
+    <div class="col-12">
+        <p class="p-recommendations">{{ fundamentals['description'] }}</p>
+    </div>
+</div>
+<div class="row-tickers">
     <h4 class="h4-tickers">Price Chart</h4>
     <!-- TradingView Widget BEGIN -->
     <div class="tradingview-widget-container">
@@ -46,7 +52,7 @@
         <h5 class="h5-checks">{{ check.title() }}: </h5>
         {% for line in checks[check] %}
             <div>
-            <img class="check" src="static/images/{% if checks[check][line] %}green{% else %}red{% endif %}_check.png">
+            <img class="check" src="/static/images/{% if checks[check][line] %}green{% else %}red{% endif %}_check.png">
             <span>{{ line|safe }}</span>
             </div>
         {% endfor %}
@@ -61,7 +67,7 @@
             <div class="col col-4">
             <p class="p-recommendations">{{ recommendation_key }}: </p></div>
             <div class="col col-4 rectangles">
-                <img src="static/images/rating_{{ recommendations[recommendation_key] }}.png">
+                <img src="/static/images/rating_{{ recommendations[recommendation_key] }}.png">
             </div>
             <div class="col col-4"></div>
         {% endif %}

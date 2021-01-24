@@ -6,6 +6,8 @@ from flaskr.sending_bot import sending_bot
 from flaskr.db import db_session
 from flaskr.news.model import News
 
+logger = logging.getLogger(__name__)
+
 
 def send_to_bot(news) -> None:
     """
@@ -30,19 +32,19 @@ def save_news_to_db(all_news) -> bool:
         first_news_in_db = News.query.filter(News.title == one_news['title']).first()
 
         if not first_news_in_db:
-            logging.info(f"Trying to add news with title '{one_news['title']}' to DB.")
+            logger.info(f"Trying to add news with title '{one_news['title']}' to DB.")
             db_session.add(News(one_news))
             send_to_bot(one_news)
         elif one_news['change'] != first_news_in_db.change:
-            logging.info(f"Trying to update price of {first_news_in_db.ticker} in DB.")
+            logger.info(f"Trying to update price of {first_news_in_db.ticker} in DB.")
             first_news_in_db.change = one_news['change']
 
     try:
         db_session.commit()
-        logging.info(f"All news in DB are added and updated.")
+        logger.info(f"All news in DB are added and updated.")
         return True
     except exc.SQLAlchemyError:
-        logging.info(f"Failed to add or update news to DB.")
+        logger.error(f"Failed to add or update news to DB.")
         return False
 
 
@@ -72,8 +74,8 @@ def delete_news_from_db() -> bool:
         db_session.delete(one_old_news)
     try:
         db_session.commit()
-        logging.info(f"{num_old_news} old news were deleted from the DB.")
+        logger.info(f"{num_old_news} old news were deleted from the DB.")
         return True
     except exc.SQLAlchemyError:
-        logging.info("Failed to delete news from the DB.")
+        logger.info("Failed to delete news from the DB.")
         return False

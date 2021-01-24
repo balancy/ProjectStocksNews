@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, send_from_directory
-import logging
+from flaskr.stocks.db_interact import get_stocks_fundamentals
+from flaskr.errors.exceptions import StockNotFoundException
 from flaskr.news.parse import get_tickers
-from flaskr.stocks.calculate_checks import check_graph_and_get_recommendations
+from flaskr.stocks.checks_and_recommendations import check_graph, get_recommendations_for_view
 
 blueprint = Blueprint('ticker', __name__, url_prefix='/stocks')
 
@@ -13,20 +14,20 @@ def ticker_fundamentals(ticker):
     :param ticker: company ticker
     :return: shows ticker.html
     """
-    try:
-        checks, recommendations = check_graph_and_get_recommendations(ticker.upper())
-    except TimeoutError:
-        logging.info(f"Timeout error during parsing {ticker} info from Finviz.")
-        return render_template('error.html', parameter="timeout")
-    except ConnectionError:
-        logging.info(f"Connection error during parsing {ticker} info from Finviz.")
-        return render_template('error.html', parameter="connection")
-    except IndexError:
-        logging.info(f"There is no such ticker {ticker} found on Finviz.")
-        return render_template('error.html', parameter="ticker")
 
-    return render_template('ticker.html', pagetitle=f"Ticker {ticker}", ticker=ticker, checks=checks,
-                           recommendations=recommendations)
+    try:
+        ticker = ticker.upper()
+        fundamentals = get_stocks_fundamentals(ticker)
+        checks = check_graph(ticker, fundamentals)
+        recommendations = get_recommendations_for_view(fundamentals)
+        return render_template('ticker.html',
+                               pagetitle=f"{ticker}",
+                               ticker=ticker,
+                               fundamentals=fundamentals,
+                               checks=checks,
+                               recommendations=recommendations)
+    except StockNotFoundException:
+        return render_template('error.html', parameter="ticker")
 
 
 @blueprint.route("/")
@@ -57,13 +58,3 @@ def get_diagram(path):
     :return: graph
     """
     return send_from_directory("diagrams", path)
-
-
-@blueprint.route("/static/<path:path>")
-def get_image(path):
-    """
-    Gives access for project to the static folder.
-    :param path: path to the static
-    :return: static files
-    """
-    return send_from_directory("static", path)
