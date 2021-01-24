@@ -11,4 +11,7 @@ flaskr/utils
 flaskr.db
 flaskr.log
 just_for_test
+run.bat
 reading_bot.log
+!flaskr/charts/.gitkeep
+!flaskr/diagrams/.gitkeep
