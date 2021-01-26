@@ -11,7 +11,7 @@
 
 ## Описание приложения.
 
-Приложение состоит из сайта на [Flask](https://flask.palletsprojects.com/en/1.1.x/) парсит новости с 
+Приложение состоит из web-приложения на [Flask](https://flask.palletsprojects.com/en/1.1.x/) парсит новости с 
 [новостной ленты](https://i.ibb.co/jZK4Jwn/menu.png) и телеграм-бота. 
 
 **Сайт** имеет три вкладки:
@@ -79,6 +79,11 @@ FINANCIAL_API_KEY - Ваш ключ на сайте FINANCIAL_BASE_URL
 HOST_NAME - Имя Вашего хостинга
 ```
 
+Создайте Базу данных:
+```
+python create_db.py
+```
+
 ## Запуск программы
 
-Для старта web-приложения запустите `flask app`. Для старта бота запустите `reading_bot.py`.
+Для старта web-приложения запустите `flaskr app`. Для старта бота запустите `reading_bot.py`.

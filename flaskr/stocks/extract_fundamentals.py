@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 import requests
 from config import FINANCIAL_API_KEY, FINANCIAL_BASE_URL
 from flaskr.stocks.extract_from_finviz import get_finviz_stocks_fundamentals
@@ -81,7 +82,11 @@ def get_financial_ratios(ticker):
     """
 
     financial_ratios_url = FINANCIAL_BASE_URL + f"ratios/{ticker}?apikey={FINANCIAL_API_KEY}&limit=10"
-    financial_ratios_json = requests.get(financial_ratios_url).json()
+    try:
+        financial_ratios_json = requests.get(financial_ratios_url).json()
+    except json.decoder.JSONDecodeError:
+        financial_ratios_json = dict(dict())
+
     financial_ratios_json_now = financial_ratios_json[0]
     financial_ratios_json_3ya = index_error_handler(financial_ratios_json, 3)
     financial_ratios_json_5ya = index_error_handler(financial_ratios_json, 5)
@@ -104,7 +109,11 @@ def get_financial_growth_data(ticker):
     """
 
     financial_growth_url = FINANCIAL_BASE_URL + f"financial-growth/{ticker}?apikey={FINANCIAL_API_KEY}&limit=10"
-    financial_growth_json = requests.get(financial_growth_url).json()
+    try:
+        financial_growth_json = requests.get(financial_growth_url).json()
+    except json.decoder.JSONDecodeError:
+        financial_growth_json = dict(dict())
+
     financial_growth_json_now = financial_growth_json[0]
 
     dict_ = dict()
@@ -125,12 +134,15 @@ def get_historical_rating(ticker):
     """
 
     historical_rating_url = FINANCIAL_BASE_URL + f"historical-rating/{ticker}?apikey={FINANCIAL_API_KEY}"
-    historical_rating_json = requests.get(historical_rating_url).json()[0]
+    try:
+        historical_rating_json = requests.get(historical_rating_url).json()[0]
+    except json.decoder.JSONDecodeError:
+        historical_rating_json = dict()
 
     dict_ = dict()
-    dict_['analysts_rating'] = historical_rating_json['rating']
+    dict_['analysts_rating'] = historical_rating_json.get('rating', '')
     dict_['analysts_score'] = historical_rating_json.get('ratingScore', 0)
-    dict_['analysts_recommendation'] = historical_rating_json['ratingRecommendation']
+    dict_['analysts_recommendation'] = historical_rating_json.get('ratingRecommendation', '')
     dict_['rating_DCF'] = historical_rating_json.get('ratingDetailsDCFScore', 0)
     dict_['rating_ROE'] = historical_rating_json.get('ratingDetailsROEScore', 0)
     dict_['rating_ROA'] = historical_rating_json.get('ratingDetailsROAScore', 0)
@@ -149,11 +161,14 @@ def get_profile_data(ticker):
     """
 
     profile_url = FINANCIAL_BASE_URL + f"profile/{ticker}?apikey={FINANCIAL_API_KEY}"
-    profile_json = requests.get(profile_url).json()[0]
+    try:
+        profile_json = requests.get(profile_url).json()[0]
+    except json.decoder.JSONDecodeError:
+        profile_json = dict()
 
     dict_ = dict()
     dict_['dcf'] = none_handler(profile_json.get('dcf', 0))
-    dict_['description'] = profile_json.get('description')
+    dict_['description'] = profile_json.get('description', '')
     return dict_
 
 
@@ -165,7 +180,10 @@ def get_balance_sheet_data(ticker):
     """
 
     balance_sheet_url = FINANCIAL_BASE_URL + f"balance-sheet-statement/{ticker}?apikey={FINANCIAL_API_KEY}"
-    balance_sheet_json = requests.get(balance_sheet_url).json()[0]
+    try:
+        balance_sheet_json = requests.get(balance_sheet_url).json()[0]
+    except json.decoder.JSONDecodeError:
+        balance_sheet_json = dict()
 
     dict_ = dict()
     dict_['short_term_liabilities'] = balance_sheet_json.get('totalCurrentLiabilities', 0)
@@ -185,7 +203,11 @@ def get_cash_flow_data(ticker):
     """
 
     cash_flow_url = FINANCIAL_BASE_URL + f"cash-flow-statement/{ticker}?apikey={FINANCIAL_API_KEY}&limit=10"
-    cash_flow_json = requests.get(cash_flow_url).json()
+    try:
+        cash_flow_json = requests.get(cash_flow_url).json()
+    except json.decoder.JSONDecodeError:
+        cash_flow_json = dict(dict())
+
     cash_flow_json_now = cash_flow_json[0]
     cash_flow_json_10ya = index_error_handler(cash_flow_json, 9)
 

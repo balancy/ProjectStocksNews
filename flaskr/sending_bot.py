@@ -1,6 +1,6 @@
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 import logging
-from config import BOT_API_KEY, HOST_NAME
+from config import BOT_API_KEY, HOST_NAME, YF_URL
 from flaskr.user.model import BotUser
 
 logger = logging.getLogger(__name__)
@@ -34,8 +34,11 @@ class SendingBot(Bot):
 
         users = BotUser.query.all()
         for user in users:
-            self.send_message(chat_id=user.id, text=self.message, parse_mode=ParseMode.HTML,
-                              reply_markup=get_inline_keyboard(self.ticker))
+            if '.' in self.ticker:
+                self.send_message(chat_id=user.id, text=self.message, parse_mode=ParseMode.HTML)
+            else:
+                self.send_message(chat_id=user.id, text=self.message, parse_mode=ParseMode.HTML,
+                                  reply_markup=get_inline_keyboard(self.ticker))
             logger.info(f"'News was sent to the user {user.username} ({user.id})")
 
     def format_from_json(self, json) -> None:
@@ -46,7 +49,11 @@ class SendingBot(Bot):
 
         self.ticker = json['ticker']
         self.message = f"<a href='{json['url']}'>{json['title']}</a>\n"
-        self.message += f"<b><a href='{HOST_NAME}/stocks/{json['ticker']}'>{json['ticker']}</a>: {json['change']}%</b>\n"
+        if '.' in json['ticker']:
+            self.message = f"<b><a href='{YF_URL}/{json['ticker']}'>{json['ticker']}</a>: {json['change']}%</b>\n"
+        else:
+            self.message += f"<b><a href='{HOST_NAME}/stocks/{json['ticker']}'>" \
+                            f"{json['ticker']}</a>: {json['change']}%</b>\n"
 
 
 sending_bot = SendingBot()

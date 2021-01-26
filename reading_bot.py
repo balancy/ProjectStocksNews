@@ -27,44 +27,45 @@ def read_user_info(update, _context) -> None:
                               f"/unsubscribe - отписаться от рассылки")
 
 
-def save_bot_user_to_db(user_id, username) -> bool:
+def is_user_id_db(user_id) -> bool:
+    """
+    Checks if user is in DB.
+    :param id: user's id
+    :return: true or false
+    """
+
+    return bool(BotUser.query.filter(BotUser.id == user_id).first())
+
+
+def save_bot_user_to_db(user_id, username) -> None:
     """
     Saving new users to the DB.
     :param user_id: user id
     :param username: user username
     """
 
-    user_exists = BotUser.query.filter(BotUser.id == user_id).first()
-    if not user_exists:
-        new_user = BotUser(id=user_id, username=username)
-        db_session.add(new_user)
-        try:
-            db_session.commit()
-            return True
-        except exc.SQLAlchemyError:
-            logging.info(f"Failed to add user {username} to DB.")
-            sys.exit("Encountered general SQLAlchemyError during saving user in DB in ReadingBot.")
-    else:
-        return False
+    new_user = BotUser(id=user_id, username=username)
+    db_session.add(new_user)
+    try:
+        db_session.commit()
+    except exc.SQLAlchemyError:
+        logging.info(f"Failed to add user {username} to DB.")
+        sys.exit("Encountered general SQLAlchemyError during saving user in DB in ReadingBot.")
 
 
-def delete_bot_user_from_db(user_id) -> bool:
+def delete_bot_user_from_db(user_id) -> None:
     """
     Deleting users from the DB.
     :param user_id: user id
     """
 
-    user_exists = BotUser.query.filter(BotUser.id == user_id).first()
-    if user_exists:
-        db_session.delete(user_exists)
-        try:
-            db_session.commit()
-            return True
-        except exc.SQLAlchemyError:
-            logging.info(f"Failed to delete user with id={user_id} from DB.")
-            sys.exit("Encountered general SQLAlchemyError during deleting user from DB in ReadingBot.")
-    else:
-        return False
+    user = BotUser.query.filter(BotUser.id == user_id).first()
+    db_session.delete(user)
+    try:
+        db_session.commit()
+    except exc.SQLAlchemyError:
+        logging.info(f"Failed to delete user with id={user_id} from DB.")
+        sys.exit("Encountered general SQLAlchemyError during deleting user from DB in ReadingBot.")
 
 
 def user_subscribe(update, _context) -> None:
@@ -72,15 +73,15 @@ def user_subscribe(update, _context) -> None:
     Subscribing user to the bot.
     """
 
-    id = update["message"]["chat"]["id"]
-    username = update["message"]["chat"]["username"]
-    is_positive = save_bot_user_to_db(user_id=id, username=username)
-    if is_positive:
+    user_id = update.effective_user.id
+    username = update.effective_user.username
+    if is_user_id_db(user_id):
+        update.message.reply_text(f"Ты уже в нашей базе для рассылки!")
+    else:
+        save_bot_user_to_db(user_id=user_id, username=username)
         logging.info(f"User {username} added to DB.")
         update.message.reply_text(f"Мы внесли тебя в базу для рассылки. Как только новости будут появляться, "
                                   f"ты будешь их получать через этот бот!")
-    else:
-        update.message.reply_text(f"Ты уже в нашей базе для рассылки!")
 
 
 def user_unsubscribe(update, _context) -> None:
@@ -88,13 +89,13 @@ def user_unsubscribe(update, _context) -> None:
     Unsubscribing user from the bot.
     """
 
-    id = update["message"]["chat"]["id"]
-    is_positive = delete_bot_user_from_db(user_id=id)
-    if is_positive:
-        logging.info(f"User with id={id} deleted from DB.")
-        update.message.reply_text(f"Мы убрали тебя из базы для рассылки.")
-    else:
+    user_id = update.effective_user.id
+    if not is_user_id_db(user_id):
         update.message.reply_text(f"Ты еще не подписан на рассылку!")
+    else:
+        delete_bot_user_from_db(user_id=user_id)
+        logging.info(f"User with id={user_id} deleted from DB.")
+        update.message.reply_text(f"Мы убрали тебя из базы для рассылки.")
 
 
 def send_diagram(update, context, ticker) -> None:
