@@ -1,10 +1,11 @@
 import logging
+import sentry_sdk
 from sqlalchemy import exc
 import sys
 from telegram.ext import CommandHandler, CallbackQueryHandler, Updater
 from telegram import ParseMode
 
-from config import BOT_API_KEY, DIAGRAM_FILEPATH, DIAGRAM_FILENAME
+from config import BOT_API_KEY, DIAGRAM_FILEPATH, DIAGRAM_FILENAME, SENTRY_DSN_BOT
 from flaskr.db import db_session
 from flaskr.sending_bot import get_inline_keyboard
 from flaskr.stocks.db_interact import get_stocks_fundamentals
@@ -15,6 +16,8 @@ from flaskr.user.model import BotUser
 logging.basicConfig(
     filename="reading_bot.log", level=logging.INFO,
     format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+sentry_sdk.init(SENTRY_DSN_BOT, traces_sample_rate=1.0)
 
 
 def read_user_info(update, _context) -> None:

@@ -36,6 +36,8 @@ def get_finviz_table(ticker):
 
     try:
         request = requests.get(f"{FINVIZ_URL_BASE}", headers=FINVIZ_HEADERS, params={"t": ticker})
+        if request.status_code == 404:
+            raise StockNotFoundException(ticker)
         df = pd.read_html(request.text)
     except TimeoutError:
         logger.error(f"Timeout error during parsing {ticker} info from Finviz.")
@@ -57,11 +59,7 @@ def get_finviz_stocks_fundamentals(ticker):
     df = get_finviz_table(ticker)
 
     # main fundamentals table from site
-    try:
-        finviz_fundamentals = df[5]
-    except IndexError:
-        logger.error(f"Index error during parsing {ticker} info from Finviz.")
-        raise StockNotFoundException(ticker)
+    finviz_fundamentals = df[5]
 
     # transforming dataframe to dictionary
     dict_finviz = get_dict_from_df(finviz_fundamentals)

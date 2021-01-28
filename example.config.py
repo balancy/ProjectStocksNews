@@ -6,8 +6,7 @@ TICKERS_FILENAME = "flaskr/static/data/tickers.json"
 RSS_URL = "https://www.marketwatch.com/markets?mod=top_nav"
 
 # db uri
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "", "flaskr.db")
-SQLALCHEMY_TRACK_MODIFICATIONS = False
+SQLALCHEMY_DATABASE_URI = "link to your DB"
 
 # bot
 BOT_API_KEY = "your telegram bot api key"
@@ -38,3 +37,7 @@ CHART_FILENAME = "_chart.png"
 
 # host
 HOST_NAME = "your host name"
+
+# sentry
+SENTRY_DSN_FLASK = "your sentry dsn for flask app"
+SENTRY_DSN_BOT = "your sentry dsn for bot"

@@ -33,7 +33,7 @@
    <br/><br/>
    
 2. Диаграмма перспективности компаний (за основу расчета взят алгоритм построения подобной диаграммы в приложении 
-   [Simply Wall Street](https://simplywall.st/))
+   [Simply Wall Street](https://simplywall.st/)
    <br /><br/>
    <img src="https://i.postimg.cc/RC6Ph5Wq/perspective-diagram.png" width="800">
    <br/><br/>
@@ -73,10 +73,13 @@ pip install -r requirements.txt
 
 Переименуйте файл `example.config.py` в `config.py`. Присвойте значения константам:
 ```
+SQLALCHEMY_DATABASE_URI - Ссылка на Вашу базу данных
 BOT_API_KEY - API ключ Вашего телеграм бота
 BOT_API_LINK - Ссылка на Ваш бот
 FINANCIAL_API_KEY - Ваш ключ на сайте FINANCIAL_BASE_URL
 HOST_NAME - Имя Вашего хостинга
+SENTRY_DSN_FLASK - DSN для Flask-приложения с Вашего sentry аккаунта
+SENTRY_DSN_BOT - DSN для бота с Вашего sentry аккаунта 
 ```
 
 Создайте Базу данных:

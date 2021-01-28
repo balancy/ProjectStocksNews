@@ -57,8 +57,7 @@ def get_checked_finviz_fundamentals(dict_from_finviz):
     """
 
     dict_ = dict()
-    dict_['price'] = float(dict_from_finviz.get('Price'))
-    dict_['sector'] = dict_from_finviz.get('sector')
+    dict_['price'] = value_handler(dict_from_finviz.get('Price'))
     dict_['pe_ratio'] = value_handler(dict_from_finviz.get('P/E'))
     dict_['peg_ratio'] = value_handler(dict_from_finviz.get('PEG'))
     dict_['pb_ratio'] = value_handler(dict_from_finviz.get('P/B'))
@@ -186,11 +185,11 @@ def get_balance_sheet_data(ticker):
         balance_sheet_json = dict()
 
     dict_ = dict()
-    dict_['short_term_liabilities'] = balance_sheet_json.get('totalCurrentLiabilities', 0)
-    dict_['long_term_liabilities'] = balance_sheet_json.get('totalLiabilities', 0)
-    dict_['short_term_assets'] = balance_sheet_json.get('totalCurrentAssets', 0)
-    dict_['long_term_assets'] = balance_sheet_json.get('totalAssets', 0)
-    dict_['total_debt'] = balance_sheet_json.get('totalDebt', 0)
+    dict_['short_term_liabilities'] = int(balance_sheet_json.get('totalCurrentLiabilities', 0))
+    dict_['long_term_liabilities'] = int(balance_sheet_json.get('totalLiabilities', 0))
+    dict_['short_term_assets'] = int(balance_sheet_json.get('totalCurrentAssets', 0))
+    dict_['long_term_assets'] = int(balance_sheet_json.get('totalAssets', 0))
+    dict_['total_debt'] = int(balance_sheet_json.get('totalDebt', 0))
 
     return dict_
 
@@ -213,8 +212,8 @@ def get_cash_flow_data(ticker):
 
     dict_ = dict()
     dict_['operating_cash_flow'] = cash_flow_json_now.get('operatingCashFlow', 0)
-    dict_['dividends_paid_now'] = none_handler(-cash_flow_json_now.get('dividendsPaid', 0))
-    dict_['dividends_paid_10ya'] = none_handler(-cash_flow_json_10ya.get('dividendsPaid', 0))
+    dict_['dividends_paid_now'] = int(-cash_flow_json_now.get('dividendsPaid', 0))
+    dict_['dividends_paid_10ya'] = int(-cash_flow_json_10ya.get('dividendsPaid', 0))
 
     return dict_
 

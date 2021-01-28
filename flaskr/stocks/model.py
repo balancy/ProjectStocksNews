@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey
+from sqlalchemy import BigInteger, Boolean, Column, Float, ForeignKey, DateTime, Integer, String
 from sqlalchemy.orm import relationship
 from flaskr.db import Base
 
@@ -54,15 +54,15 @@ class Fundamentals(Base):
 
     dcf = Column(Float)
 
-    short_term_liabilities = Column(Integer)
-    long_term_liabilities = Column(Integer)
-    short_term_assets = Column(Integer)
-    long_term_assets = Column(Integer)
-    total_debt = Column(Integer)
+    short_term_liabilities = Column(BigInteger)
+    long_term_liabilities = Column(BigInteger)
+    short_term_assets = Column(BigInteger)
+    long_term_assets = Column(BigInteger)
+    total_debt = Column(BigInteger)
 
-    operating_cash_flow = Column(Integer)
-    dividends_paid_now = Column(Float)
-    dividends_paid_10ya = Column(Float)
+    operating_cash_flow = Column(BigInteger)
+    dividends_paid_now = Column(BigInteger)
+    dividends_paid_10ya = Column(BigInteger)
 
     date = Column(DateTime)
 
@@ -88,7 +88,6 @@ class Fundamentals(Base):
         dict_['eps_g_past_5y_country'] = self.country.eps_g_past_5y
         dict_['sector_name'] = self.sector.name
         return dict_
-
 
 
 class SectorFundamentals(Base):
