@@ -2,13 +2,14 @@ import logging
 from sqlalchemy import exc
 import sys
 from telegram.ext import CommandHandler, CallbackQueryHandler, Updater
-from telegram import ParseMode
+from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 
 from config import BOT_API_KEY, DIAGRAM_FILEPATH, DIAGRAM_FILENAME
 from flaskr.db import db_session
 from flaskr.sending_bot import get_inline_keyboard
 from flaskr.stocks.db_interact import get_stocks_fundamentals
 from flaskr.stocks.checks_and_recommendations import check_graph, get_recommendations_for_view
+from flaskr.stocks.model import Fundamentals
 from flaskr.stocks.utils.hist_graph import create_graph
 from flaskr.user.model import BotUser
 
@@ -154,6 +155,20 @@ def send_recommendations(update, context, ticker) -> None:
         logging.info(f"Impossible to create {ticker} price chart. It's possible that data is unavailable.")
 
 
+def send_description(update, context) -> None:
+    """
+    Sending description stock
+    """
+    if context.args:
+        stocks_ticker = str(context.args[0])
+        ticker_info = Fundamentals.query.filter(Fundamentals.ticker == stocks_ticker).first()
+        message = str(ticker_info.description)
+    else:
+        message = "Write exapmle '/description TSLA'"
+    chat_id = update.effective_chat.id
+    context.bot.send_message(chat_id=chat_id, text=message)
+
+
 def callback_handling(update, context) -> None:
     """
     Handles callback from inline keyboard and shows recommendations, creates graph or diagram depending on choice
@@ -180,6 +195,7 @@ def start_reading_bot() -> None:
     dp.add_handler(CommandHandler("start", read_user_info))
     dp.add_handler(CommandHandler("subscribe", user_subscribe))
     dp.add_handler(CommandHandler("unsubscribe", user_unsubscribe))
+    dp.add_handler(CommandHandler("description", send_description))
     dp.add_handler(CallbackQueryHandler(callback_handling))
     mybot.start_polling()
     mybot.idle()
