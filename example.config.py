@@ -7,6 +7,7 @@ RSS_URL = "https://www.marketwatch.com/markets?mod=top_nav"
 
 # db uri
 SQLALCHEMY_DATABASE_URI = "link to your DB"
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # bot
 BOT_API_KEY = "your telegram bot api key"

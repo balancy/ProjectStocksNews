@@ -11,8 +11,7 @@
 
 ## Описание приложения.
 
-Приложение состоит из web-приложения на [Flask](https://flask.palletsprojects.com/en/1.1.x/) парсит новости с 
-[новостной ленты](https://i.ibb.co/jZK4Jwn/menu.png) и телеграм-бота. 
+Приложение состоит из web-приложения на [Flask](https://flask.palletsprojects.com/en/1.1.x/) и телеграм-бота. 
 
 **Сайт** имеет три вкладки:
 
